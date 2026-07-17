@@ -1,0 +1,2739 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💰 KINMON ORACLE ～金運モンスター神託～</title>
+<!-- html2canvas CDN (bundled inline fallback) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+/* ============================================================
+   GLOBAL RESET & BASE
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --gold:#FFD700;--gold2:#FFA500;--gold3:#FF8C00;
+  --dark:#0a0508;--dark2:#120d0a;--dark3:#1a1208;
+  --purple:#6B21A8;--purple2:#9333EA;
+  --green:#22C55E;--red:#EF4444;
+  --glass:rgba(255,215,0,0.07);
+  --glass2:rgba(255,215,0,0.13);
+  --border:rgba(255,215,0,0.25);
+  --text:#F5E6C8;--text2:#C9A84C;
+}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+  background:var(--dark);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ============================================================
+   CANVAS BACKGROUND
+   ============================================================ */
+#bgCanvas{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  z-index:0;pointer-events:none;
+}
+
+/* ============================================================
+   SCREENS
+   ============================================================ */
+.screen{
+  position:relative;z-index:1;
+  display:none;min-height:100vh;
+  padding:20px 16px 60px;
+}
+.screen.active{display:block;}
+
+/* ============================================================
+   HOME SCREEN
+   ============================================================ */
+#homeScreen{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:40px 20px;
+}
+.home-logo{
+  font-size:clamp(3rem,10vw,7rem);
+  margin-bottom:8px;
+  animation:floatY 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 30px #FFD700);
+}
+.home-title{
+  font-size:clamp(1.8rem,6vw,3.5rem);
+  font-weight:900;
+  background:linear-gradient(135deg,#FFD700,#FFA500,#FF6B35,#FFD700);
+  background-size:300%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:gradShift 4s linear infinite;
+  letter-spacing:0.05em;
+  margin-bottom:6px;
+}
+.home-subtitle{
+  font-size:clamp(0.8rem,2.5vw,1.1rem);
+  color:var(--text2);
+  letter-spacing:0.2em;
+  margin-bottom:40px;
+}
+.home-tagline{
+  font-size:clamp(0.9rem,2.8vw,1.2rem);
+  color:var(--text);
+  margin-bottom:50px;
+  line-height:1.8;
+  max-width:500px;
+  padding:20px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:var(--glass);
+  backdrop-filter:blur(10px);
+}
+.home-tagline span{color:var(--gold);font-weight:700;}
+.btn-start{
+  background:linear-gradient(135deg,#FFD700,#FF8C00);
+  color:#1a0a00;
+  border:none;
+  padding:18px 56px;
+  font-size:1.3rem;
+  font-weight:900;
+  border-radius:50px;
+  cursor:pointer;
+  letter-spacing:0.1em;
+  box-shadow:0 0 40px rgba(255,165,0,0.6),0 8px 32px rgba(0,0,0,0.4);
+  transition:all 0.3s;
+  animation:pulseGlow 2s ease-in-out infinite;
+}
+.btn-start:hover{
+  transform:scale(1.08) translateY(-3px);
+  box-shadow:0 0 60px rgba(255,215,0,0.8),0 16px 40px rgba(0,0,0,0.5);
+}
+.home-badge{
+  margin-top:30px;
+  display:flex;gap:16px;flex-wrap:wrap;justify-content:center;
+}
+.badge{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:6px 16px;
+  font-size:0.78rem;
+  color:var(--text2);
+  backdrop-filter:blur(8px);
+}
+
+/* ============================================================
+   MENU SCREEN
+   ============================================================ */
+.screen-header{
+  text-align:center;
+  margin-bottom:32px;
+  padding-top:16px;
+}
+.screen-header h2{
+  font-size:clamp(1.4rem,5vw,2.2rem);
+  font-weight:900;
+  background:linear-gradient(135deg,#FFD700,#FFA500);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin-bottom:8px;
+}
+.screen-header p{color:var(--text2);font-size:0.9rem;}
+
+.menu-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;
+  max-width:900px;
+  margin:0 auto;
+}
+.menu-card{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:28px 24px;
+  cursor:pointer;
+  transition:all 0.35s;
+  backdrop-filter:blur(12px);
+  position:relative;
+  overflow:hidden;
+}
+.menu-card::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,215,0,0.1),transparent);
+  opacity:0;transition:opacity 0.3s;
+}
+.menu-card:hover{
+  transform:translateY(-6px);
+  border-color:var(--gold);
+  box-shadow:0 8px 40px rgba(255,215,0,0.25);
+}
+.menu-card:hover::before{opacity:1;}
+.menu-icon{font-size:2.8rem;margin-bottom:14px;display:block;}
+.menu-tag{
+  display:inline-block;
+  background:linear-gradient(135deg,#6B21A8,#9333EA);
+  color:#fff;font-size:0.7rem;
+  padding:3px 10px;border-radius:10px;
+  margin-bottom:10px;letter-spacing:0.05em;
+}
+.menu-card h3{
+  font-size:1.15rem;font-weight:800;
+  color:var(--gold);margin-bottom:8px;
+}
+.menu-card p{font-size:0.85rem;color:var(--text2);line-height:1.6;}
+.menu-card .arrow{
+  position:absolute;right:20px;top:50%;transform:translateY(-50%);
+  font-size:1.5rem;color:var(--border);transition:all 0.3s;
+}
+.menu-card:hover .arrow{color:var(--gold);right:14px;}
+.menu-special{
+  grid-column:1/-1;
+  background:linear-gradient(135deg,rgba(107,33,168,0.3),rgba(255,215,0,0.1));
+  border-color:rgba(147,51,234,0.5);
+}
+
+/* ============================================================
+   FORM STYLES
+   ============================================================ */
+.form-container{
+  max-width:560px;margin:0 auto;
+}
+.form-card{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:32px 28px;
+  backdrop-filter:blur(12px);
+  margin-bottom:20px;
+}
+.form-group{
+  margin-bottom:24px;
+}
+.form-label{
+  display:block;
+  font-size:0.85rem;
+  color:var(--text2);
+  margin-bottom:8px;
+  font-weight:600;
+  letter-spacing:0.05em;
+}
+.form-input,.form-select{
+  width:100%;
+  background:rgba(0,0,0,0.4);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 18px;
+  color:var(--text);
+  font-size:1rem;
+  font-family:inherit;
+  outline:none;
+  transition:all 0.3s;
+}
+.form-input:focus,.form-select:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(255,215,0,0.15);
+  background:rgba(0,0,0,0.6);
+}
+.form-select option{background:#1a1208;color:var(--text);}
+.radio-group{
+  display:flex;flex-wrap:wrap;gap:10px;
+}
+.radio-btn{
+  flex:1;min-width:80px;
+  background:rgba(0,0,0,0.3);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 8px;
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.25s;
+  font-size:0.85rem;
+  color:var(--text2);
+  user-select:none;
+}
+.radio-btn:hover{border-color:var(--gold2);color:var(--text);}
+.radio-btn.active{
+  background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,140,0,0.1));
+  border-color:var(--gold);
+  color:var(--gold);
+  font-weight:700;
+}
+.radio-btn .rb-icon{font-size:1.4rem;display:block;margin-bottom:4px;}
+.checkbox-group{
+  display:flex;flex-wrap:wrap;gap:10px;
+}
+.check-btn{
+  background:rgba(0,0,0,0.3);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 14px;
+  cursor:pointer;
+  transition:all 0.25s;
+  font-size:0.85rem;
+  color:var(--text2);
+  user-select:none;
+}
+.check-btn:hover{border-color:var(--gold2);}
+.check-btn.active{
+  background:rgba(255,215,0,0.15);
+  border-color:var(--gold);
+  color:var(--gold);
+  font-weight:700;
+}
+
+.btn-divination{
+  width:100%;
+  background:linear-gradient(135deg,#FFD700,#FF8C00,#FF4500);
+  background-size:200%;
+  color:#1a0a00;
+  border:none;
+  padding:16px;
+  font-size:1.1rem;
+  font-weight:900;
+  border-radius:14px;
+  cursor:pointer;
+  letter-spacing:0.1em;
+  transition:all 0.3s;
+  animation:gradShift 3s linear infinite;
+  box-shadow:0 4px 24px rgba(255,140,0,0.4);
+}
+.btn-divination:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 40px rgba(255,215,0,0.5);
+}
+.btn-back{
+  background:var(--glass);
+  border:1px solid var(--border);
+  color:var(--text2);
+  padding:10px 24px;
+  border-radius:30px;
+  cursor:pointer;
+  font-size:0.9rem;
+  transition:all 0.25s;
+  display:inline-flex;align-items:center;gap:6px;
+  margin-bottom:20px;
+}
+.btn-back:hover{border-color:var(--gold2);color:var(--gold2);}
+
+/* ============================================================
+   LOADING SCREEN
+   ============================================================ */
+#loadingScreen{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+}
+.loading-orb{
+  width:120px;height:120px;
+  border-radius:50%;
+  background:radial-gradient(circle,#FFD700,#FF8C00,#6B21A8);
+  animation:orbPulse 1.5s ease-in-out infinite;
+  box-shadow:0 0 60px rgba(255,215,0,0.5);
+  margin-bottom:32px;
+  position:relative;
+}
+.loading-orb::after{
+  content:'💰';
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-size:3rem;
+  animation:orbRotate 2s linear infinite;
+}
+.loading-text{
+  font-size:1.1rem;color:var(--gold);
+  letter-spacing:0.15em;
+  animation:blink 1.2s ease-in-out infinite;
+}
+.loading-sub{
+  font-size:0.85rem;color:var(--text2);
+  margin-top:12px;
+}
+.loading-progress{
+  width:240px;height:4px;
+  background:rgba(255,215,0,0.15);
+  border-radius:2px;
+  margin-top:24px;
+  overflow:hidden;
+}
+.loading-progress-bar{
+  height:100%;
+  background:linear-gradient(90deg,#FFD700,#FF8C00);
+  border-radius:2px;
+  animation:progressFill 2s ease forwards;
+}
+
+/* ============================================================
+   RESULT SCREENS
+   ============================================================ */
+.result-hero{
+  text-align:center;
+  padding:24px 0;
+  margin-bottom:24px;
+}
+.monster-display{
+  position:relative;
+  width:180px;height:180px;
+  margin:0 auto 20px;
+}
+.monster-circle{
+  width:180px;height:180px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:6rem;
+  position:relative;
+  animation:floatY 3s ease-in-out infinite;
+}
+.monster-glow{
+  position:absolute;inset:-10px;
+  border-radius:50%;
+  animation:glowPulse 2s ease-in-out infinite;
+}
+.result-monster-name{
+  font-size:clamp(1.4rem,5vw,2rem);
+  font-weight:900;
+  color:var(--gold);
+  margin-bottom:6px;
+}
+.result-monster-type{
+  font-size:0.85rem;
+  color:var(--text2);
+  letter-spacing:0.15em;
+  margin-bottom:16px;
+}
+.result-badge{
+  display:inline-block;
+  padding:6px 20px;
+  border-radius:20px;
+  font-size:0.85rem;
+  font-weight:700;
+  letter-spacing:0.1em;
+}
+
+.result-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:16px;
+  max-width:860px;
+  margin:0 auto 24px;
+}
+.result-card{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:22px;
+  backdrop-filter:blur(10px);
+}
+.result-card h4{
+  font-size:0.85rem;
+  color:var(--text2);
+  letter-spacing:0.1em;
+  margin-bottom:12px;
+  display:flex;align-items:center;gap:6px;
+}
+.result-card h4 span{font-size:1.2rem;}
+.result-card p{
+  font-size:0.95rem;
+  line-height:1.75;
+  color:var(--text);
+}
+.result-card .highlight{
+  color:var(--gold);font-weight:700;
+}
+.result-card .danger{
+  color:#EF4444;font-weight:700;
+}
+.result-card .success{
+  color:#22C55E;font-weight:700;
+}
+
+.gauge-wrap{
+  margin:12px 0;
+}
+.gauge-label{
+  display:flex;justify-content:space-between;
+  font-size:0.8rem;color:var(--text2);
+  margin-bottom:6px;
+}
+.gauge-bar{
+  height:10px;border-radius:5px;
+  background:rgba(255,255,255,0.08);
+  overflow:hidden;
+}
+.gauge-fill{
+  height:100%;border-radius:5px;
+  transition:width 1.5s ease;
+}
+
+.calendar-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:4px;
+  margin-top:12px;
+}
+.cal-header{
+  font-size:0.7rem;color:var(--text2);
+  text-align:center;padding:4px 0;
+}
+.cal-day{
+  font-size:0.75rem;
+  text-align:center;
+  padding:6px 2px;
+  border-radius:6px;
+  cursor:default;
+}
+.cal-day.empty{background:transparent;}
+.cal-day.normal{
+  background:rgba(255,255,255,0.04);
+  color:var(--text2);
+}
+.cal-day.lucky-s{
+  background:linear-gradient(135deg,#FFD700,#FF8C00);
+  color:#1a0a00;font-weight:900;
+  box-shadow:0 0 8px rgba(255,215,0,0.5);
+  animation:glowDay 2s ease-in-out infinite;
+}
+.cal-day.lucky-a{
+  background:rgba(255,215,0,0.2);
+  color:var(--gold);font-weight:700;
+  border:1px solid rgba(255,215,0,0.4);
+}
+.cal-day.lucky-b{
+  background:rgba(34,197,94,0.15);
+  color:#4ADE80;
+  border:1px solid rgba(34,197,94,0.3);
+}
+.cal-day.bad{
+  background:rgba(239,68,68,0.12);
+  color:#F87171;
+  border:1px solid rgba(239,68,68,0.25);
+}
+
+.cal-legend{
+  display:flex;flex-wrap:wrap;gap:8px;
+  margin-top:10px;
+}
+.cal-legend-item{
+  display:flex;align-items:center;gap:4px;
+  font-size:0.72rem;color:var(--text2);
+}
+.cal-legend-dot{
+  width:10px;height:10px;border-radius:2px;
+}
+
+.step-indicator{
+  display:flex;justify-content:center;
+  gap:12px;margin-bottom:24px;
+  flex-wrap:wrap;
+}
+.step-dot{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;font-weight:700;
+  border:2px solid var(--border);
+  color:var(--text2);
+  background:rgba(0,0,0,0.3);
+  transition:all 0.3s;
+  position:relative;
+}
+.step-dot.done{
+  background:linear-gradient(135deg,#FFD700,#FF8C00);
+  border-color:var(--gold);
+  color:#1a0a00;
+}
+.step-dot.current{
+  border-color:var(--gold);
+  color:var(--gold);
+  box-shadow:0 0 16px rgba(255,215,0,0.4);
+}
+.step-line{
+  width:40px;height:2px;
+  background:var(--border);
+  align-self:center;
+}
+.step-line.done{background:var(--gold);}
+
+.wallet-score-ring{
+  width:120px;height:120px;
+  position:relative;margin:0 auto 16px;
+}
+.wallet-score-ring svg{
+  transform:rotate(-90deg);
+  width:120px;height:120px;
+}
+.wallet-score-ring .score-text{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+}
+.wallet-score-ring .score-num{
+  font-size:2rem;font-weight:900;color:var(--gold);
+  display:block;
+}
+.wallet-score-ring .score-label{
+  font-size:0.65rem;color:var(--text2);
+}
+
+.action-list{
+  list-style:none;
+}
+.action-list li{
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,215,0,0.08);
+  display:flex;gap:10px;align-items:flex-start;
+  font-size:0.9rem;line-height:1.6;
+}
+.action-list li:last-child{border-bottom:none;}
+.action-icon{font-size:1.2rem;flex-shrink:0;margin-top:1px;}
+
+.past-life-box{
+  background:linear-gradient(135deg,rgba(107,33,168,0.3),rgba(30,10,50,0.5));
+  border:1px solid rgba(147,51,234,0.4);
+  border-radius:16px;
+  padding:24px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  max-width:860px;
+  margin:0 auto 20px;
+}
+.past-life-box::before{
+  content:'✨';
+  position:absolute;
+  font-size:10rem;opacity:0.04;
+  top:-20px;right:-20px;
+}
+.past-life-title{
+  font-size:0.8rem;
+  color:rgba(167,139,250,0.8);
+  letter-spacing:0.2em;
+  margin-bottom:10px;
+}
+.past-life-content{
+  font-size:1rem;
+  line-height:1.8;
+  color:var(--text);
+}
+.past-life-content em{
+  color:#C084FC;font-style:normal;font-weight:700;
+}
+
+.reverse-fortune-box{
+  background:linear-gradient(135deg,rgba(127,29,29,0.3),rgba(50,10,10,0.5));
+  border:1px solid rgba(239,68,68,0.3);
+  border-radius:16px;
+  padding:24px;
+  max-width:860px;
+  margin:0 auto 20px;
+}
+.reverse-fortune-title{
+  font-size:0.8rem;color:rgba(252,165,165,0.8);
+  letter-spacing:0.2em;margin-bottom:14px;
+  display:flex;align-items:center;gap:6px;
+}
+.reverse-list{
+  list-style:none;
+}
+.reverse-list li{
+  padding:8px 0;
+  border-bottom:1px solid rgba(239,68,68,0.1);
+  display:flex;gap:10px;
+  font-size:0.9rem;line-height:1.6;
+  color:var(--text);
+}
+.reverse-list li:last-child{border-bottom:none;}
+.reverse-icon{font-size:1.1rem;color:#F87171;flex-shrink:0;}
+
+.share-section{
+  text-align:center;
+  max-width:560px;margin:0 auto;
+  padding:24px 0;
+}
+.share-section h3{
+  font-size:1rem;color:var(--text2);
+  margin-bottom:16px;
+}
+.btn-share{
+  background:var(--glass);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:12px 28px;
+  border-radius:30px;
+  cursor:pointer;
+  font-size:0.9rem;
+  margin:6px;
+  transition:all 0.25s;
+  font-family:inherit;
+}
+.btn-share:hover{
+  border-color:var(--gold);color:var(--gold);
+  background:rgba(255,215,0,0.08);
+}
+.btn-home{
+  background:linear-gradient(135deg,#FFD700,#FF8C00);
+  border:none;
+  color:#1a0a00;
+  padding:14px 40px;
+  border-radius:30px;
+  cursor:pointer;
+  font-size:1rem;
+  font-weight:800;
+  margin:10px;
+  transition:all 0.3s;
+  font-family:inherit;
+  display:block;
+  width:100%;max-width:280px;
+  margin:16px auto 8px;
+}
+.btn-home:hover{transform:scale(1.04);}
+.btn-menu-return{
+  background:var(--glass);
+  border:1px solid var(--border);
+  color:var(--text2);
+  padding:12px 30px;
+  border-radius:30px;
+  cursor:pointer;
+  font-size:0.95rem;
+  transition:all 0.25s;
+  font-family:inherit;
+  display:block;
+  width:100%;max-width:280px;
+  margin:0 auto;
+}
+.btn-menu-return:hover{border-color:var(--gold2);color:var(--gold2);}
+
+.divider{
+  width:60px;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:20px auto;
+}
+
+.notification{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#1a1208,#2a1a0a);
+  border:1px solid var(--gold);
+  color:var(--gold);
+  padding:12px 28px;
+  border-radius:30px;
+  font-size:0.9rem;
+  font-weight:700;
+  z-index:1000;
+  opacity:0;transition:opacity 0.3s;
+  pointer-events:none;
+  white-space:nowrap;
+  box-shadow:0 4px 30px rgba(255,215,0,0.3);
+}
+.notification.show{opacity:1;}
+
+/* ============================================================
+   SAVE BUTTON & MODAL
+   ============================================================ */
+.btn-save-img{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;max-width:280px;
+  margin:0 auto 10px;
+  background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);
+  border:2px solid rgba(99,179,237,0.6);
+  color:#90CDF4;
+  padding:13px 28px;
+  border-radius:30px;
+  cursor:pointer;
+  font-size:0.95rem;
+  font-weight:700;
+  font-family:inherit;
+  letter-spacing:0.05em;
+  transition:all 0.3s;
+  box-shadow:0 0 16px rgba(99,179,237,0.2);
+}
+.btn-save-img:hover{
+  border-color:#90CDF4;
+  color:#fff;
+  box-shadow:0 0 30px rgba(99,179,237,0.5);
+  transform:translateY(-2px);
+}
+.btn-save-img svg{flex-shrink:0;}
+
+/* CAPTURE OVERLAY */
+#captureOverlay{
+  display:none;
+  position:fixed;inset:0;z-index:9000;
+  background:rgba(10,5,8,0.9);
+  backdrop-filter:blur(8px);
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding:20px 16px 40px;
+  overflow-y:auto;
+}
+#captureOverlay.active{display:flex;}
+
+.overlay-toolbar{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;max-width:600px;
+  margin-bottom:16px;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.overlay-title{
+  font-size:0.9rem;font-weight:700;
+  color:var(--gold);
+  flex:1;
+}
+.overlay-btn-group{
+  display:flex;gap:8px;flex-wrap:wrap;
+}
+.overlay-btn{
+  border:none;border-radius:20px;
+  padding:9px 18px;font-size:0.85rem;
+  font-weight:700;cursor:pointer;
+  font-family:inherit;transition:all 0.25s;
+}
+.overlay-btn-dl{
+  background:linear-gradient(135deg,#FFD700,#FF8C00);
+  color:#1a0a00;
+  box-shadow:0 0 16px rgba(255,215,0,0.4);
+}
+.overlay-btn-dl:hover{transform:scale(1.05);box-shadow:0 0 28px rgba(255,215,0,0.7);}
+.overlay-btn-close{
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.2);
+  color:#ddd;
+}
+.overlay-btn-close:hover{background:rgba(255,255,255,0.2);color:#fff;}
+
+#capturePreview{
+  width:100%;max-width:600px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  box-shadow:0 8px 40px rgba(255,215,0,0.15);
+  display:block;
+}
+
+/* CAPTURE CARD (hidden, used for rendering) */
+#captureCard{
+  position:fixed;
+  left:-9999px;top:0;
+  width:600px;
+  background:#0a0508;
+  font-family:'Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+  overflow:hidden;
+  z-index:-1;
+}
+.capture-header{
+  background:linear-gradient(135deg,#1a1208,#120d0a);
+  border-bottom:2px solid rgba(255,215,0,0.3);
+  padding:20px 24px 16px;
+  display:flex;align-items:center;gap:14px;
+}
+.capture-logo{font-size:2.2rem;}
+.capture-app-name{font-size:0.75rem;color:#C9A84C;letter-spacing:0.2em;}
+.capture-app-title{font-size:1.1rem;font-weight:900;color:#FFD700;}
+.capture-body{
+  padding:24px;
+}
+.capture-hero{
+  text-align:center;
+  padding:20px 0 16px;
+  border-bottom:1px solid rgba(255,215,0,0.15);
+  margin-bottom:20px;
+}
+.capture-monster-emoji{font-size:4.5rem;display:block;margin-bottom:8px;}
+.capture-result-name{
+  font-size:1.6rem;font-weight:900;color:#FFD700;
+  margin-bottom:4px;
+}
+.capture-result-sub{font-size:0.85rem;color:#C9A84C;}
+.capture-score-wrap{
+  display:flex;justify-content:center;gap:24px;
+  margin:16px 0;
+}
+.capture-score-box{
+  text-align:center;
+  background:rgba(255,215,0,0.08);
+  border:1px solid rgba(255,215,0,0.25);
+  border-radius:12px;
+  padding:12px 20px;
+}
+.capture-score-num{
+  font-size:2rem;font-weight:900;color:#FFD700;
+  display:block;
+}
+.capture-score-label{font-size:0.7rem;color:#C9A84C;}
+.capture-rows{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:16px;
+}
+.capture-row-item{
+  background:rgba(255,215,0,0.06);
+  border:1px solid rgba(255,215,0,0.2);
+  border-radius:10px;
+  padding:12px;
+}
+.capture-row-label{
+  font-size:0.7rem;color:#C9A84C;
+  margin-bottom:4px;
+}
+.capture-row-value{
+  font-size:0.88rem;color:#F5E6C8;line-height:1.5;
+}
+.capture-row-value.gold{color:#FFD700;font-weight:700;}
+.capture-advice{
+  background:linear-gradient(135deg,rgba(107,33,168,0.2),rgba(255,215,0,0.05));
+  border:1px solid rgba(147,51,234,0.3);
+  border-radius:10px;
+  padding:14px;
+  font-size:0.85rem;color:#F5E6C8;line-height:1.7;
+  margin-bottom:16px;
+}
+.capture-advice strong{color:#C084FC;}
+.capture-footer{
+  text-align:center;
+  padding:14px 24px;
+  background:rgba(255,215,0,0.04);
+  border-top:1px solid rgba(255,215,0,0.12);
+}
+.capture-footer-text{
+  font-size:0.72rem;color:rgba(201,168,76,0.6);
+  letter-spacing:0.1em;
+}
+.capture-gauges{margin:10px 0;}
+.capture-gauge-row{margin-bottom:6px;}
+.capture-gauge-label-row{display:flex;justify-content:space-between;font-size:0.72rem;color:#C9A84C;margin-bottom:3px;}
+.capture-gauge-bar{height:7px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;}
+.capture-gauge-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#FFD700,#FF8C00);}
+
+/* ============================================================
+   COMPLETE SET SCREEN
+   ============================================================ */
+.complete-header{
+  text-align:center;
+  background:linear-gradient(135deg,rgba(107,33,168,0.25),rgba(255,215,0,0.08));
+  border:1px solid rgba(147,51,234,0.3);
+  border-radius:20px;
+  padding:24px;
+  margin-bottom:24px;
+  max-width:860px;
+  margin-left:auto;margin-right:auto;
+}
+.complete-header h2{
+  font-size:clamp(1.3rem,4vw,2rem);
+  font-weight:900;
+  background:linear-gradient(135deg,#C084FC,#FFD700,#C084FC);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-size:200%;
+  animation:gradShift 4s linear infinite;
+}
+
+.step-section{
+  max-width:860px;
+  margin:0 auto 20px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:26px;
+  backdrop-filter:blur(10px);
+  position:relative;
+  overflow:hidden;
+}
+.step-section::before{
+  content:attr(data-step);
+  position:absolute;right:20px;top:16px;
+  font-size:4rem;font-weight:900;
+  color:rgba(255,215,0,0.05);
+  line-height:1;
+}
+.step-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:linear-gradient(135deg,#6B21A8,#9333EA);
+  color:#fff;
+  padding:4px 14px;
+  border-radius:12px;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:0.08em;
+  margin-bottom:12px;
+}
+.step-section h3{
+  font-size:1.2rem;font-weight:800;
+  color:var(--gold);
+  margin-bottom:14px;
+}
+.step-section p{
+  font-size:0.95rem;line-height:1.8;
+  color:var(--text);
+}
+
+/* ============================================================
+   SCROLL BAR
+   ============================================================ */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:rgba(255,215,0,0.3);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,215,0,0.5);}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes floatY{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-12px);}
+}
+@keyframes gradShift{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+@keyframes pulseGlow{
+  0%,100%{box-shadow:0 0 40px rgba(255,165,0,0.6),0 8px 32px rgba(0,0,0,0.4);}
+  50%{box-shadow:0 0 70px rgba(255,215,0,0.9),0 16px 48px rgba(0,0,0,0.5);}
+}
+@keyframes orbPulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 60px rgba(255,215,0,0.5);}
+  50%{transform:scale(1.1);box-shadow:0 0 100px rgba(255,215,0,0.8);}
+}
+@keyframes orbRotate{
+  0%{transform:translate(-50%,-50%) rotate(0deg);}
+  100%{transform:translate(-50%,-50%) rotate(360deg);}
+}
+@keyframes blink{
+  0%,100%{opacity:1;}50%{opacity:0.4;}
+}
+@keyframes progressFill{
+  0%{width:0;}100%{width:100%;}
+}
+@keyframes glowPulse{
+  0%,100%{box-shadow:0 0 20px currentColor;opacity:0.4;}
+  50%{box-shadow:0 0 40px currentColor;opacity:0.7;}
+}
+@keyframes glowDay{
+  0%,100%{box-shadow:0 0 8px rgba(255,215,0,0.5);}
+  50%{box-shadow:0 0 16px rgba(255,215,0,0.9);}
+}
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(24px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.fade-in{animation:fadeInUp 0.6s ease forwards;}
+.fade-in-delay-1{animation:fadeInUp 0.6s 0.1s ease both;}
+.fade-in-delay-2{animation:fadeInUp 0.6s 0.2s ease both;}
+.fade-in-delay-3{animation:fadeInUp 0.6s 0.3s ease both;}
+.fade-in-delay-4{animation:fadeInUp 0.6s 0.4s ease both;}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:480px){
+  .form-card{padding:22px 16px;}
+  .step-section{padding:20px 16px;}
+  .result-card{padding:16px;}
+  .calendar-grid{gap:2px;}
+  .cal-day{font-size:0.65rem;padding:5px 1px;}
+}
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND CANVAS -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- ==================== HOME SCREEN ==================== -->
+<div id="homeScreen" class="screen active">
+  <div class="home-logo">💰</div>
+  <div class="home-title">KINMON ORACLE</div>
+  <div class="home-subtitle">〜 金運モンスター神託 〜</div>
+  <div class="home-tagline">
+    あなたの<span>金運の正体</span>を暴く。<br>
+    お金と自分の関係を、<span>圧倒的リアル</span>で解き明かす。<br>
+    さあ、<span>黄金の扉</span>を開けよう。
+  </div>
+  <button class="btn-start" onclick="showScreen('menuScreen')">⚡ 今すぐ占う ⚡</button>
+  <div class="home-badge">
+    <span class="badge">🐲 金運モンスター診断</span>
+    <span class="badge">👛 財布の神様神託</span>
+    <span class="badge">📅 成金チャンス日</span>
+    <span class="badge">✨ 3点完全鑑定</span>
+    <span class="badge">💀 破産回避術</span>
+  </div>
+</div>
+
+<!-- ==================== MENU SCREEN ==================== -->
+<div id="menuScreen" class="screen">
+  <div class="screen-header">
+    <h2>🔮 占術メニュー</h2>
+    <p>あなたはどの扉から入りますか？</p>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-card fade-in" onclick="showScreen('monsterScreen')">
+      <span class="menu-icon">🐲</span>
+      <span class="menu-tag">守護霊・マインド</span>
+      <h3>金運モンスター診断</h3>
+      <p>あなたの「お金の癖」を<br>個性的なモンスターで可視化！</p>
+      <span class="arrow">›</span>
+    </div>
+    <div class="menu-card fade-in-delay-1" onclick="showScreen('walletScreen')">
+      <span class="menu-icon">👛</span>
+      <span class="menu-tag">物理・環境</span>
+      <h3>財布の神様からのご神託</h3>
+      <p>財布の状態から今の金運を<br>ズバリ鑑定！即実践アドバイス付</p>
+      <span class="arrow">›</span>
+    </div>
+    <div class="menu-card fade-in-delay-2" onclick="showScreen('luckyDayScreen')">
+      <span class="menu-icon">📅</span>
+      <span class="menu-tag">時期・数字</span>
+      <h3>成金・爆上げチャンス日</h3>
+      <p>あなたの最強開運日を<br>カレンダーで可視化！</p>
+      <span class="arrow">›</span>
+    </div>
+    <div class="menu-card menu-special fade-in-delay-3" onclick="showScreen('completeSetScreen')">
+      <span class="menu-icon">👑</span>
+      <span class="menu-tag">🌟 プレミアム</span>
+      <h3>金運爆上げ3点完全鑑定</h3>
+      <p>「金脈の源流」→「貧乏神の追い出し方」→「黄金の転換期」<br>
+      前世の借金＋破産回避術付の完全版！</p>
+      <span class="arrow">›</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MONSTER SCREEN ==================== -->
+<div id="monsterScreen" class="screen">
+  <button class="btn-back" onclick="showScreen('menuScreen')">‹ メニューへ戻る</button>
+  <div class="screen-header">
+    <h2>🐲 金運モンスター診断</h2>
+    <p>あなたの「お金の本質」がわかります</p>
+  </div>
+  <div class="form-container">
+    <div class="form-card">
+      <div class="form-group">
+        <label class="form-label">✨ お名前（フルネーム）</label>
+        <input type="text" class="form-input" id="monsterName" placeholder="例：山田 太郎" maxlength="20">
+      </div>
+      <div class="form-group">
+        <label class="form-label">🎂 生年月日</label>
+        <input type="date" class="form-input" id="monsterBirthday">
+      </div>
+      <div class="form-group">
+        <label class="form-label">💫 今のお金への感情は？</label>
+        <div class="radio-group" id="moneyFeelingGroup">
+          <div class="radio-btn" data-val="anxious" onclick="selectRadio(this,'moneyFeeling')">
+            <span class="rb-icon">😰</span>不安
+          </div>
+          <div class="radio-btn" data-val="stable" onclick="selectRadio(this,'moneyFeeling')">
+            <span class="rb-icon">😊</span>安定
+          </div>
+          <div class="radio-btn" data-val="greedy" onclick="selectRadio(this,'moneyFeeling')">
+            <span class="rb-icon">🤑</span>もっと欲しい
+          </div>
+          <div class="radio-btn" data-val="free" onclick="selectRadio(this,'moneyFeeling')">
+            <span class="rb-icon">🦅</span>自由に使いたい
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">💰 お金を使うとき何を感じる？</label>
+        <div class="radio-group" id="spendingFeelGroup">
+          <div class="radio-btn" data-val="guilt" onclick="selectRadio(this,'spendingFeel')">
+            <span class="rb-icon">😣</span>罪悪感
+          </div>
+          <div class="radio-btn" data-val="joy" onclick="selectRadio(this,'spendingFeel')">
+            <span class="rb-icon">🎉</span>喜び
+          </div>
+          <div class="radio-btn" data-val="calm" onclick="selectRadio(this,'spendingFeel')">
+            <span class="rb-icon">🧘</span>冷静に考える
+          </div>
+          <div class="radio-btn" data-val="impulse" onclick="selectRadio(this,'spendingFeel')">
+            <span class="rb-icon">⚡</span>衝動的に使う
+          </div>
+        </div>
+      </div>
+      <button class="btn-divination" onclick="runMonsterDivination()">
+        🔮 モンスターを召喚する！
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== WALLET SCREEN ==================== -->
+<div id="walletScreen" class="screen">
+  <button class="btn-back" onclick="showScreen('menuScreen')">‹ メニューへ戻る</button>
+  <div class="screen-header">
+    <h2>👛 財布の神様からのご神託</h2>
+    <p>あなたの財布が今の金運を映し出す</p>
+  </div>
+  <div class="form-container">
+    <div class="form-card">
+      <div class="form-group">
+        <label class="form-label">🎨 財布の色</label>
+        <div class="radio-group" id="walletColorGroup">
+          <div class="radio-btn" data-val="brown" onclick="selectRadio(this,'walletColor')"><span class="rb-icon">🟫</span>茶・ブラウン</div>
+          <div class="radio-btn" data-val="black" onclick="selectRadio(this,'walletColor')"><span class="rb-icon">⬛</span>黒</div>
+          <div class="radio-btn" data-val="yellow" onclick="selectRadio(this,'walletColor')"><span class="rb-icon">🟡</span>黄・ゴールド</div>
+          <div class="radio-btn" data-val="white" onclick="selectRadio(this,'walletColor')"><span class="rb-icon">⬜</span>白・ベージュ</div>
+          <div class="radio-btn" data-val="red" onclick="selectRadio(this,'walletColor')"><span class="rb-icon">🟥</span>赤・ピンク</div>
+          <div class="radio-btn" data-val="blue" onclick="selectRadio(this,'walletColor')"><span class="rb-icon">🟦</span>青・緑・その他</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📐 財布の形・種類</label>
+        <div class="radio-group" id="walletTypeGroup">
+          <div class="radio-btn" data-val="long" onclick="selectRadio(this,'walletType')"><span class="rb-icon">💼</span>長財布</div>
+          <div class="radio-btn" data-val="short" onclick="selectRadio(this,'walletType')"><span class="rb-icon">👜</span>折り財布</div>
+          <div class="radio-btn" data-val="card" onclick="selectRadio(this,'walletType')"><span class="rb-icon">💳</span>カードケース</div>
+          <div class="radio-btn" data-val="coin" onclick="selectRadio(this,'walletType')"><span class="rb-icon">🪙</span>小銭入れ</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🪙 財布の中の状態（複数選択可）</label>
+        <div class="checkbox-group" id="walletContentsGroup">
+          <div class="check-btn" data-val="receipts" onclick="toggleCheck(this,'walletContents')">📝 レシートが多い</div>
+          <div class="check-btn" data-val="cards" onclick="toggleCheck(this,'walletContents')">💳 カードがぎっしり</div>
+          <div class="check-btn" data-val="coins" onclick="toggleCheck(this,'walletContents')">🪙 小銭がたくさん</div>
+          <div class="check-btn" data-val="tidy" onclick="toggleCheck(this,'walletContents')">✨ 整理整頓されてる</div>
+          <div class="check-btn" data-val="oldwallet" onclick="toggleCheck(this,'walletContents')">👴 使い込んでボロい</div>
+          <div class="check-btn" data-val="photo" onclick="toggleCheck(this,'walletContents')">📸 写真・お守り入り</div>
+          <div class="check-btn" data-val="empty" onclick="toggleCheck(this,'walletContents')">💸 いつも残金少ない</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🕐 財布の使用年数</label>
+        <div class="radio-group" id="walletAgeGroup">
+          <div class="radio-btn" data-val="new" onclick="selectRadio(this,'walletAge')"><span class="rb-icon">✨</span>1年以内</div>
+          <div class="radio-btn" data-val="mid" onclick="selectRadio(this,'walletAge')"><span class="rb-icon">⏳</span>1〜3年</div>
+          <div class="radio-btn" data-val="old" onclick="selectRadio(this,'walletAge')"><span class="rb-icon">🕰️</span>3年以上</div>
+        </div>
+      </div>
+      <button class="btn-divination" onclick="runWalletDivination()">
+        🙏 神様に聞いてみる
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== LUCKY DAY SCREEN ==================== -->
+<div id="luckyDayScreen" class="screen">
+  <button class="btn-back" onclick="showScreen('menuScreen')">‹ メニューへ戻る</button>
+  <div class="screen-header">
+    <h2>📅 成金・爆上げチャンス日</h2>
+    <p>四柱推命＋数秘術で最強開運日を算出</p>
+  </div>
+  <div class="form-container">
+    <div class="form-card">
+      <div class="form-group">
+        <label class="form-label">✨ お名前</label>
+        <input type="text" class="form-input" id="luckyName" placeholder="例：田中 花子" maxlength="20">
+      </div>
+      <div class="form-group">
+        <label class="form-label">🎂 生年月日</label>
+        <input type="date" class="form-input" id="luckyBirthday">
+      </div>
+      <div class="form-group">
+        <label class="form-label">📅 チェックしたい月</label>
+        <input type="month" class="form-input" id="luckyMonth">
+      </div>
+      <div class="form-group">
+        <label class="form-label">🎯 特に知りたいことは？</label>
+        <div class="radio-group" id="luckyPurposeGroup">
+          <div class="radio-btn" data-val="contract" onclick="selectRadio(this,'luckyPurpose')"><span class="rb-icon">📋</span>契約・交渉</div>
+          <div class="radio-btn" data-val="lottery" onclick="selectRadio(this,'luckyPurpose')"><span class="rb-icon">🎰</span>宝くじ・賭け</div>
+          <div class="radio-btn" data-val="invest" onclick="selectRadio(this,'luckyPurpose')"><span class="rb-icon">📈</span>投資・副業</div>
+          <div class="radio-btn" data-val="start" onclick="selectRadio(this,'luckyPurpose')"><span class="rb-icon">🚀</span>起業・開始</div>
+          <div class="radio-btn" data-val="self" onclick="selectRadio(this,'luckyPurpose')"><span class="rb-icon">💎</span>自己投資</div>
+        </div>
+      </div>
+      <button class="btn-divination" onclick="runLuckyDayDivination()">
+        📅 最強チャンス日を算出！
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== COMPLETE SET SCREEN ==================== -->
+<div id="completeSetScreen" class="screen">
+  <button class="btn-back" onclick="showScreen('menuScreen')">‹ メニューへ戻る</button>
+  <div class="screen-header">
+    <h2>👑 金運爆上げ3点完全鑑定</h2>
+    <p>あなただけの「黄金の鑑定書」を作成します</p>
+  </div>
+  <div class="form-container" style="max-width:620px">
+    <div class="form-card">
+      <div class="form-group">
+        <label class="form-label">✨ お名前（フルネーム）</label>
+        <input type="text" class="form-input" id="completeName" placeholder="例：佐藤 美咲" maxlength="20">
+      </div>
+      <div class="form-group">
+        <label class="form-label">🎂 生年月日</label>
+        <input type="date" class="form-input" id="completeBirthday">
+      </div>
+      <div class="form-group">
+        <label class="form-label">⚡ 今の収入状況</label>
+        <div class="radio-group" id="incomeGroup">
+          <div class="radio-btn" data-val="low" onclick="selectRadio(this,'income')"><span class="rb-icon">📉</span>減ってきてる</div>
+          <div class="radio-btn" data-val="flat" onclick="selectRadio(this,'income')"><span class="rb-icon">➡️</span>変わらない</div>
+          <div class="radio-btn" data-val="rising" onclick="selectRadio(this,'income')"><span class="rb-icon">📈</span>増えてきてる</div>
+          <div class="radio-btn" data-val="unstable" onclick="selectRadio(this,'income')"><span class="rb-icon">🌊</span>波がある</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🧠 貯金できてますか？</label>
+        <div class="radio-group" id="savingGroup">
+          <div class="radio-btn" data-val="no" onclick="selectRadio(this,'saving')"><span class="rb-icon">😭</span>全然できてない</div>
+          <div class="radio-btn" data-val="little" onclick="selectRadio(this,'saving')"><span class="rb-icon">🐢</span>少しずつ</div>
+          <div class="radio-btn" data-val="yes" onclick="selectRadio(this,'saving')"><span class="rb-icon">💪</span>しっかりできてる</div>
+          <div class="radio-btn" data-val="invest" onclick="selectRadio(this,'saving')"><span class="rb-icon">🚀</span>投資に回してる</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🌙 直感で選んでください（色）</label>
+        <div class="radio-group" id="colorInsightGroup">
+          <div class="radio-btn" data-val="gold" onclick="selectRadio(this,'colorInsight')"><span class="rb-icon">✨</span>金・黄</div>
+          <div class="radio-btn" data-val="fire" onclick="selectRadio(this,'colorInsight')"><span class="rb-icon">🔥</span>赤・橙</div>
+          <div class="radio-btn" data-val="earth" onclick="selectRadio(this,'colorInsight')"><span class="rb-icon">🌱</span>緑・茶</div>
+          <div class="radio-btn" data-val="water" onclick="selectRadio(this,'colorInsight')"><span class="rb-icon">💧</span>青・白</div>
+          <div class="radio-btn" data-val="void" onclick="selectRadio(this,'colorInsight')"><span class="rb-icon">🌌</span>黒・紫</div>
+        </div>
+      </div>
+      <button class="btn-divination" onclick="runCompleteSet()">
+        👑 完全鑑定書を作成する！
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== LOADING SCREEN ==================== -->
+<div id="loadingScreen" class="screen">
+  <div class="loading-orb"></div>
+  <div class="loading-text" id="loadingText">神託を読み解いています...</div>
+  <div class="loading-sub" id="loadingSub">宇宙のエネルギーを集めています</div>
+  <div class="loading-progress"><div class="loading-progress-bar"></div></div>
+</div>
+
+<!-- ==================== MONSTER RESULT ==================== -->
+<div id="monsterResult" class="screen">
+  <div style="max-width:860px;margin:0 auto;">
+    <button class="btn-back" onclick="showScreen('menuScreen')">‹ メニューへ戻る</button>
+    <div class="result-hero fade-in" id="monsterResultHero"></div>
+    <div class="result-grid fade-in-delay-1" id="monsterResultGrid"></div>
+    <div class="reverse-fortune-box fade-in-delay-2" id="monsterReverse"></div>
+    <div class="share-section fade-in-delay-3">
+      <button class="btn-save-img" onclick="saveResultImage('monster')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        📸 結果を画像で保存
+      </button>
+      <button class="btn-home" onclick="showScreen('homeScreen')">🏠 トップへ戻る</button>
+      <button class="btn-menu-return" onclick="showScreen('menuScreen')">他の占いも試す</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== WALLET RESULT ==================== -->
+<div id="walletResult" class="screen">
+  <div style="max-width:860px;margin:0 auto;">
+    <button class="btn-back" onclick="showScreen('menuScreen')">‹ メニューへ戻る</button>
+    <div class="result-hero fade-in" id="walletResultHero"></div>
+    <div class="result-grid fade-in-delay-1" id="walletResultGrid"></div>
+    <div class="fade-in-delay-2" id="walletActions"></div>
+    <div class="share-section fade-in-delay-3">
+      <button class="btn-save-img" onclick="saveResultImage('wallet')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        📸 結果を画像で保存
+      </button>
+      <button class="btn-home" onclick="showScreen('homeScreen')">🏠 トップへ戻る</button>
+      <button class="btn-menu-return" onclick="showScreen('menuScreen')">他の占いも試す</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== LUCKY DAY RESULT ==================== -->
+<div id="luckyDayResult" class="screen">
+  <div style="max-width:860px;margin:0 auto;">
+    <button class="btn-back" onclick="showScreen('menuScreen')">‹ メニューへ戻る</button>
+    <div class="result-hero fade-in" id="luckyResultHero"></div>
+    <div class="fade-in-delay-1" id="luckyCalendarArea"></div>
+    <div class="result-grid fade-in-delay-2" id="luckyResultGrid"></div>
+    <div class="share-section fade-in-delay-3">
+      <button class="btn-save-img" onclick="saveResultImage('lucky')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        📸 結果を画像で保存
+      </button>
+      <button class="btn-home" onclick="showScreen('homeScreen')">🏠 トップへ戻る</button>
+      <button class="btn-menu-return" onclick="showScreen('menuScreen')">他の占いも試す</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== COMPLETE SET RESULT ==================== -->
+<div id="completeSetResult" class="screen">
+  <div style="max-width:860px;margin:0 auto;">
+    <button class="btn-back" onclick="showScreen('menuScreen')">‹ メニューへ戻る</button>
+    <div id="completeSetContent"></div>
+    <div class="share-section fade-in-delay-4">
+      <button class="btn-save-img" onclick="saveResultImage('complete')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        📸 結果を画像で保存
+      </button>
+      <button class="btn-home" onclick="showScreen('homeScreen')">🏠 トップへ戻る</button>
+      <button class="btn-menu-return" onclick="showScreen('menuScreen')">他の占いも試す</button>
+    </div>
+  </div>
+</div>
+
+<!-- CAPTURE OVERLAY -->
+<div id="captureOverlay">
+  <div class="overlay-toolbar">
+    <div class="overlay-title">📸 鑑定結果プレビュー</div>
+    <div class="overlay-btn-group">
+      <button class="overlay-btn overlay-btn-dl" id="overlayDlBtn" onclick="downloadCapturedImage()">⬇️ ダウンロード</button>
+      <button class="overlay-btn overlay-btn-close" onclick="closeCaptureOverlay()">✕ 閉じる</button>
+    </div>
+  </div>
+  <img id="capturePreview" src="" alt="鑑定結果">
+</div>
+
+<!-- CAPTURE CARD (off-screen render target) -->
+<div id="captureCard"></div>
+
+<!-- NOTIFICATION -->
+<div class="notification" id="notification"></div>
+
+<script>
+/* ============================================================
+   BACKGROUND CANVAS — GOLD PARTICLES
+   ============================================================ */
+(function(){
+  const canvas=document.getElementById('bgCanvas');
+  const ctx=canvas.getContext('2d');
+  let W,H,particles=[];
+
+  function resize(){
+    W=canvas.width=window.innerWidth;
+    H=canvas.height=window.innerHeight;
+  }
+  window.addEventListener('resize',resize);resize();
+
+  class Particle{
+    constructor(){this.reset(true);}
+    reset(init){
+      this.x=Math.random()*W;
+      this.y=init?Math.random()*H:H+10;
+      this.r=Math.random()*2+0.5;
+      this.speed=Math.random()*0.4+0.1;
+      this.opacity=Math.random()*0.6+0.1;
+      this.hue=Math.random()*30+35;// gold range
+      this.drift=(Math.random()-0.5)*0.3;
+      this.twinkle=Math.random()*Math.PI*2;
+      this.twinkleSpeed=Math.random()*0.02+0.01;
+    }
+    update(){
+      this.y-=this.speed;
+      this.x+=this.drift;
+      this.twinkle+=this.twinkleSpeed;
+      if(this.y<-10)this.reset(false);
+    }
+    draw(){
+      const alpha=this.opacity*(0.6+0.4*Math.sin(this.twinkle));
+      ctx.save();
+      ctx.globalAlpha=alpha;
+      ctx.fillStyle=`hsl(${this.hue},100%,60%)`;
+      ctx.beginPath();
+      ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+      ctx.fill();
+      if(this.r>1.2){
+        ctx.fillStyle=`hsl(${this.hue},100%,85%)`;
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,this.r*0.4,0,Math.PI*2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
+
+  for(let i=0;i<120;i++)particles.push(new Particle());
+
+  function loop(){
+    ctx.clearRect(0,0,W,H);
+    particles.forEach(p=>{p.update();p.draw();});
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+/* ============================================================
+   FORM HELPERS
+   ============================================================ */
+const radioVals={};
+const checkVals={};
+
+function selectRadio(el,key){
+  radioVals[key]=el.dataset.val;
+  const group=el.closest('.radio-group');
+  group.querySelectorAll('.radio-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function toggleCheck(el,key){
+  if(!checkVals[key])checkVals[key]=[];
+  el.classList.toggle('active');
+  const v=el.dataset.val;
+  const idx=checkVals[key].indexOf(v);
+  if(idx===-1)checkVals[key].push(v);
+  else checkVals[key].splice(idx,1);
+}
+
+function getRadio(key){return radioVals[key]||null;}
+function getChecks(key){return checkVals[key]||[];}
+
+/* ============================================================
+   SCREEN MANAGEMENT
+   ============================================================ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>{
+    s.classList.remove('active');
+    s.style.display='none';
+  });
+  const t=document.getElementById(id);
+  t.classList.add('active');
+  t.style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showLoading(text,sub,callback){
+  document.getElementById('loadingText').textContent=text||'神託を読み解いています...';
+  document.getElementById('loadingSub').textContent=sub||'宇宙のエネルギーを集めています';
+  // reset animation
+  const bar=document.querySelector('.loading-progress-bar');
+  bar.style.animation='none';
+  bar.offsetHeight;
+  bar.style.animation='progressFill 2s ease forwards';
+  showScreen('loadingScreen');
+  setTimeout(callback,2200);
+}
+
+/* ============================================================
+   UTILS
+   ============================================================ */
+function nameToNum(name){
+  if(!name)return 5;
+  let sum=0;
+  for(let i=0;i<name.length;i++)sum+=name.charCodeAt(i);
+  return((sum%8)+1);
+}
+
+function dateToNum(dateStr){
+  if(!dateStr)return 3;
+  const parts=dateStr.replace(/-/g,'');
+  let sum=0;
+  for(let c of parts)if(!isNaN(c))sum+=parseInt(c);
+  while(sum>9)sum=String(sum).split('').reduce((a,b)=>a+parseInt(b),0);
+  return sum||1;
+}
+
+function getRandFromSeed(seed,arr){
+  const idx=((seed%arr.length)+arr.length)%arr.length;
+  return arr[idx];
+}
+
+function pickN(arr,n,seed){
+  const copy=[...arr];
+  const result=[];
+  for(let i=0;i<Math.min(n,copy.length);i++){
+    const idx=(seed*(i+1))%copy.length;
+    result.push(copy.splice(((idx%copy.length)+copy.length)%copy.length,1)[0]);
+  }
+  return result;
+}
+
+/* ============================================================
+   MONSTER DATA
+   ============================================================ */
+const MONSTERS=[
+  {
+    id:'golem',emoji:'🗿',name:'鉄壁ゴーレム',type:'貯蓄型・守護龍',
+    color:'#78716C',glow:'rgba(120,113,108,0.5)',badge:'💎 守護属性',badgeColor:'#78716C',
+    desc:'あなたは「防御の鉄人」。一度手に入れたお金を絶対に手放さない本能を持っています。コツコツ積み上げた資産が、やがて巨大な城壁となります。',
+    strength:'安定した積立・守る力',weakness:'チャンスを逃す慎重すぎる一面',
+    earn:'堅実な副業・積立投資・不動産',
+    gauges:{貯蓄力:95,チャンス感度:30,直感力:45,行動力:55,社交力:40},
+    advice:'定期積立は続けつつ、月に１回だけ「攻めの決断日」を設けましょう。',
+    lucky:'土曜日・月初め・茶色・数字6',
+    rival:'ギャンブルフェニックス'
+  },
+  {
+    id:'phoenix',emoji:'🔥',name:'ギャンブルフェニックス',type:'投資型・炎の申し子',
+    color:'#EF4444',glow:'rgba(239,68,68,0.5)',badge:'🔥 炎属性',badgeColor:'#DC2626',
+    desc:'あなたは「炎の申し子」。リスクを恐れず大きな賭けに出る勇気の持ち主。一度炎上しても灰の中から不死鳥のように復活する強さがあります。',
+    strength:'大胆な投資・起業・挑戦する力',weakness:'衝動買い・ギャンブル依存のリスク',
+    earn:'ハイリスク投資・起業・営業・FX',
+    gauges:{貯蓄力:25,チャンス感度:95,直感力:85,行動力:90,社交力:75},
+    advice:'熱くなる前に「24時間ルール」を設け、大きな支出は翌日まで待ちましょう。',
+    lucky:'火曜日・月末・赤色・数字1',
+    rival:'鉄壁ゴーレム'
+  },
+  {
+    id:'dragon',emoji:'🐲',name:'黄金龍',type:'引き寄せ型・至高の王者',
+    color:'#FFD700',glow:'rgba(255,215,0,0.6)',badge:'✨ 黄金属性',badgeColor:'#B45309',
+    desc:'あなたは「黄金の申し子」。なぜかお金が自然と集まってくる不思議な引力を持ちます。人を惹きつけ、縁とチャンスを呼び込む天性のオーラがあります。',
+    strength:'人脈・縁・自然な収入増加',weakness:'お金の管理・細かい計算が苦手',
+    earn:'人脈ビジネス・ブランド・インフルエンサー',
+    gauges:{貯蓄力:60,チャンス感度:90,直感力:95,行動力:70,社交力:100},
+    advice:'マネージャーか信頼できる会計士を見つけてください。稼ぎは最高、でも管理は委任が吉。',
+    lucky:'金曜日・満月の日・金色・数字8',
+    rival:'貧乏神キラー'
+  },
+  {
+    id:'tanuki',emoji:'🦝',name:'貯金タヌキ',type:'蓄積型・千年の智恵',
+    color:'#92400E',glow:'rgba(146,64,14,0.5)',badge:'🍂 大地属性',badgeColor:'#92400E',
+    desc:'あなたは「千年の知恵を持つタヌキ」。目立たないが確実に富を蓄える術を知っています。コツコツと穴を掘り、誰も知らない場所に黄金を隠す堅実さがあります。',
+    strength:'長期積立・節約・財産を守る',weakness:'スピード感の欠如・新しいことへの抵抗',
+    earn:'長期投資・配当株・積立NISA',
+    gauges:{貯蓄力:90,チャンス感度:40,直感力:55,行動力:35,社交力:50},
+    advice:'通帳を月１回「お宝の地図」だと思って眺める習慣が金運を開かせます。',
+    lucky:'水曜日・月中・茶色・数字4',
+    rival:'ギャンブルフェニックス'
+  },
+  {
+    id:'fox',emoji:'🦊',name:'商才キツネ',type:'取引型・狡猾な策士',
+    color:'#F97316',glow:'rgba(249,115,22,0.5)',badge:'🌙 月光属性',badgeColor:'#C2410C',
+    desc:'あなたは「頭脳派の商売人」。情報を素早くキャッチし、有利な取引をまとめる天才。交渉力と機転で、誰もが気づかないところでお金を動かします。',
+    strength:'交渉・転売・情報収集・副業',weakness:'信頼関係より利益優先になりがち',
+    earn:'情報ビジネス・転売・コンサルタント',
+    gauges:{貯蓄力:55,チャンス感度:85,直感力:80,行動力:80,社交力:85},
+    advice:'「信用は最大の資産」を忘れずに。短期の利益より長期の関係を大切に。',
+    lucky:'月曜日・新月・オレンジ・数字3',
+    rival:'鉄壁ゴーレム'
+  },
+  {
+    id:'wizard',emoji:'🧙',name:'錬金術師ウィザード',type:'変換型・神秘の魔術師',
+    color:'#8B5CF6',glow:'rgba(139,92,246,0.5)',badge:'🔮 魔術属性',badgeColor:'#6D28D9',
+    desc:'あなたは「お金の錬金術師」。何もないところから価値を生み出す能力を持っています。知識・技術・創造性を組み合わせて、他の人には見えない「黄金の公式」を発見します。',
+    strength:'クリエイティブ収入・知識売却・スキルアップ',weakness:'実行力の不足・理想と現実のギャップ',
+    earn:'スキル販売・コンテンツ制作・特許・講師',
+    gauges:{貯蓄力:50,チャンス感度:75,直感力:100,行動力:45,社交力:60},
+    advice:'あなたのアイデアは確実に価値があります。まず小さく試して市場の反応を確かめて。',
+    lucky:'木曜日・新月・紫・数字7',
+    rival:'商才キツネ'
+  },
+  {
+    id:'baku',emoji:'🦄',name:'福運バク',type:'夢想型・幸運の神使',
+    color:'#EC4899',glow:'rgba(236,72,153,0.5)',badge:'🌸 桃花属性',badgeColor:'#BE185D',
+    desc:'あなたは「幸運を運ぶ神使」。夢を食べるバクのように、直感と幸運が重なる場所に自然と引き寄せられます。思いがけない方向から金運が舞い込む幸福体質の持ち主。',
+    strength:'直感・幸運・予期せぬ収入・ご縁',weakness:'計画性・安定感に欠ける',
+    earn:'宝くじ・懸賞・人のご縁・贈り物',
+    gauges:{貯蓄力:35,チャンス感度:100,直感力:95,行動力:55,社交力:80},
+    advice:'夢日記をつけてください。あなたの潜在意識が金運の方角を教えています。',
+    lucky:'日曜日・吉日・ピンク・数字5',
+    rival:'鉄壁ゴーレム'
+  },
+  {
+    id:'bull',emoji:'🐂',name:'勝負牛',type:'突破型・不屈の開拓者',
+    color:'#059669',glow:'rgba(5,150,105,0.5)',badge:'⚡ 大地属性',badgeColor:'#065F46',
+    desc:'あなたは「不屈の開拓者」。壁にぶつかっても頭で突き破る圧倒的な突破力の持ち主。諦めない精神力で、長期間の努力を積み重ね、最終的に大きな富を手にします。',
+    strength:'継続力・目標達成・努力型収入',weakness:'融通が利かない・回り道が苦手',
+    earn:'本業での昇給・資格・コツコツ系副業',
+    gauges:{貯蓄力:70,チャンス感度:50,直感力:40,行動力:100,社交力:55},
+    advice:'毎月の目標額を「100円アップ」でいいので上げ続けましょう。牛は遅くても着実に進みます。',
+    lucky:'土曜日・月初め・緑・数字2',
+    rival:'ギャンブルフェニックス'
+  }
+];
+
+/* ============================================================
+   MONSTER DIVINATION
+   ============================================================ */
+function runMonsterDivination(){
+  const name=document.getElementById('monsterName').value.trim();
+  const bday=document.getElementById('monsterBirthday').value;
+  const feel=getRadio('moneyFeeling');
+  const spend=getRadio('spendingFeel');
+
+  if(!name){showNotification('⚠ お名前を入力してください');return;}
+  if(!bday){showNotification('⚠ 生年月日を入力してください');return;}
+
+  showLoading('あなたの金運モンスターを召喚中...','生命エネルギーと照合しています',()=>{
+    const nameNum=nameToNum(name);
+    const dateNum=dateToNum(bday);
+
+    // feel modifier
+    const feelMod={'anxious':0,'stable':2,'greedy':4,'free':6}[feel]||0;
+    const spendMod={'guilt':0,'joy':2,'calm':1,'impulse':3}[spend]||0;
+
+    const idx=(nameNum+dateNum+feelMod+spendMod-1)%MONSTERS.length;
+    const monster=MONSTERS[((idx%MONSTERS.length)+MONSTERS.length)%MONSTERS.length];
+
+    // score calc
+    const score=Math.min(99,60+nameNum*3+dateNum*2+(feel?4:0)+(spend?3:0));
+
+    renderMonsterResult(name,bday,monster,score);
+    showScreen('monsterResult');
+  });
+}
+
+function renderMonsterResult(name,bday,monster,score){
+  // キャプチャ用データ保存
+  _lastCaptureData.monster=Object.assign({},monster,{score});
+  // Hero
+  const hero=document.getElementById('monsterResultHero');
+  hero.innerHTML=`
+    <div class="monster-display">
+      <div class="monster-circle" style="background:radial-gradient(circle,${monster.color}44,${monster.color}11);">
+        <div class="monster-glow" style="background:radial-gradient(circle,${monster.glow},transparent);color:${monster.color};"></div>
+        ${monster.emoji}
+      </div>
+    </div>
+    <div class="result-monster-name">${monster.name}</div>
+    <div class="result-monster-type">${monster.type}</div>
+    <span class="result-badge" style="background:${monster.color}33;border:1px solid ${monster.color}66;color:${monster.color};">${monster.badge}</span>
+    <div class="divider" style="margin-top:20px;"></div>
+    <div style="font-size:2.5rem;font-weight:900;color:var(--gold);margin-top:12px;">金運スコア <span style="font-size:3.5rem;">${score}</span></div>
+    <div style="font-size:0.85rem;color:var(--text2);margin-top:4px;">あなたの金運パワー</div>
+  `;
+
+  // Gauges
+  const gaugeHtml=Object.entries(monster.gauges).map(([k,v])=>`
+    <div class="gauge-wrap">
+      <div class="gauge-label"><span>${k}</span><span style="color:var(--gold);font-weight:700;">${v}</span></div>
+      <div class="gauge-bar">
+        <div class="gauge-fill" style="width:0%;background:linear-gradient(90deg,${monster.color},${monster.color}cc);" data-target="${v}"></div>
+      </div>
+    </div>
+  `).join('');
+
+  // Grid
+  const grid=document.getElementById('monsterResultGrid');
+  grid.innerHTML=`
+    <div class="result-card">
+      <h4><span>📖</span> あなたの金運の正体</h4>
+      <p>${monster.desc}</p>
+    </div>
+    <div class="result-card">
+      <h4><span>💡</span> 能力チャート</h4>
+      ${gaugeHtml}
+    </div>
+    <div class="result-card">
+      <h4><span>⚡</span> 強み・弱み</h4>
+      <p>✅ <span class="highlight">${monster.strength}</span><br><br>
+      ⚠️ <span class="danger">${monster.weakness}</span></p>
+    </div>
+    <div class="result-card">
+      <h4><span>💰</span> あなたに向いている稼ぎ方</h4>
+      <p class="highlight">${monster.earn}</p>
+      <div class="divider"></div>
+      <h4><span>🍀</span> ラッキー要素</h4>
+      <p>${monster.lucky}</p>
+    </div>
+    <div class="result-card" style="grid-column:1/-1">
+      <h4><span>🔮</span> 金運アドバイス</h4>
+      <p>${monster.advice}</p>
+    </div>
+  `;
+
+  // Reverse fortune
+  const reverseData=getReverseFortune(monster.id);
+  const rev=document.getElementById('monsterReverse');
+  rev.innerHTML=`
+    <div class="reverse-fortune-title"><span>💀</span> 逆・金運占い〜これをやると破産する〜</div>
+    <ul class="reverse-list">
+      ${reverseData.map(r=>`<li><span class="reverse-icon">⚠️</span>${r}</li>`).join('')}
+    </ul>
+  `;
+
+  // Animate gauges after short delay
+  setTimeout(()=>{
+    document.querySelectorAll('.gauge-fill').forEach(el=>{
+      el.style.width=el.dataset.target+'%';
+    });
+  },400);
+}
+
+function getReverseFortune(monsterId){
+  const data={
+    golem:['財布をパンパンに膨らませたまま放置する','毎月の出費を一切チェックしない','「いつかやる」と先延ばしにして機会を逃す続ける'],
+    phoenix:['「今なら絶対上がる」という確信でFXに全額投入する','借金をして投資する','感情的な判断で衝動的に高額商品を購入する'],
+    dragon:['怠惰な人脈にお金と時間を捧げ続ける','お金の流れを丸投げして把握しない','「いつかくれる」という甘えで金銭の貸し借りを曖昧にする'],
+    tanuki:['特売に飛びついて「安い＝お得」という幻想を持つ','人間関係への投資をケチって孤立する','スマホの格安プランにこだわりすぎて本業の時間を削る'],
+    fox:['短期の利益のために信頼を売る','情報の真偽を確かめず飛びつく','人を欺くことで手に入れたお金を大切にしない'],
+    wizard:['完璧になるまで絶対に出さないと言い続ける','アイデアを無料で提供し続ける','同じ分野で稼いでいる人を見て嫉妬だけして行動しない'],
+    baku:['夢を見るだけで具体的な行動を何もしない','「なんとかなる」という根拠のない楽観主義で貯金ゼロ状態を続ける','宝くじを買うことを唯一の金運対策にする'],
+    bull:['睡眠と休息を削って体を壊す','変化を嫌って同じ方法を20年続ける','自分が正しいという固執から、良いアドバイスを全て無視する'],
+  };
+  return data[monsterId]||data['dragon'];
+}
+
+/* ============================================================
+   WALLET DATA
+   ============================================================ */
+const WALLET_COLOR_DATA={
+  brown:{score:78,name:'大地の財布',icon:'🌍',verdict:'安定した金運の持ち主',desc:'茶色は「大地」「安定」の色。お金を地に足つけて管理する才能があります。'},
+  black:{score:72,name:'深淵の財布',icon:'🌑',verdict:'秘めたる大きな潜在力',desc:'黒は「格式・権威・蓄財」の色。威厳があり大きなお金を引き寄せる器があります。'},
+  yellow:{score:92,name:'黄金の財布',icon:'⭐',verdict:'金運最強カラー！爆上げ確定',desc:'黄・ゴールドは「金運の神様が好む色」。最も金運を引き寄せやすい最強色です！'},
+  white:{score:68,name:'清浄の財布',icon:'☁️',verdict:'清らかさが新しい金運を呼ぶ',desc:'白は「清潔・新しい始まり」の色。古い金運の流れをリセットして新展開が期待できます。'},
+  red:{score:83,name:'情熱の財布',icon:'🔥',verdict:'行動力と収入が連動する',desc:'赤は「行動・情熱・縁起」の色。積極的に動くほど収入が増えるタイプです。'},
+  blue:{score:65,name:'流水の財布',icon:'💧',verdict:'お金が流れやすい傾向あり',desc:'青・緑は「流れ・成長・冷静」の色。お金の流れが速く、貯まりにくい傾向があります。'},
+};
+
+const WALLET_TYPE_DATA={
+  long:{bonus:10,msg:'長財布はお札が折れず「お金を大切にする姿勢」の象徴。金運アップの定番！'},
+  short:{bonus:2,msg:'折り財布は機能的ですが、お札が折れる形。少し大きめの財布への移行を検討しましょう。'},
+  card:{bonus:-5,msg:'カードケース財布はお金への意識が薄れがちです。現金への感謝を忘れないで。'},
+  coin:{bonus:-8,msg:'小銭入れメインは「お金を軽く見ている」サイン。より大きな財布で金運を育てましょう。'},
+};
+
+const WALLET_CONTENTS_MSG={
+  receipts:'【📝 レシート問題】古いレシートは「過去の消費エネルギー」が詰まっています。週1でレシートを整理するだけで金運が大幅アップします！',
+  cards:'【💳 カード多すぎ問題】本当に必要なカード3枚だけに絞りましょう。財布の中の「重さ」は金運の流れを妨げます。',
+  coins:'【🪙 コイン過多問題】小銭は専用の小銭入れに分けましょう。財布の中に余裕のスペースを作ることが新しいお金を呼び込みます。',
+  tidy:'【✨ 整理整頓OK！】完璧です！整然とした財布は「金運の神様が居心地よく感じる場所」です。この習慣を続けましょう。',
+  oldwallet:'【👴 財布の寿命問題】3年以上使った財布はエネルギーが枯れています。寅年・一粒万倍日・天赦日に新しい財布を購入しましょう。',
+  photo:'【📸 想いを込める力】写真やお守りは金運を「守る力」になります。特に笑顔の写真を入れると吉。',
+  empty:'【💸 残金ゼロ問題】財布の中に「種銭」として1万円札を常に入れておく習慣をつけましょう。',
+};
+
+function runWalletDivination(){
+  const color=getRadio('walletColor');
+  const type=getRadio('walletType');
+  const contents=getChecks('walletContents');
+  const age=getRadio('walletAge');
+
+  if(!color){showNotification('⚠ 財布の色を選んでください');return;}
+  if(!type){showNotification('⚠ 財布の形を選んでください');return;}
+
+  showLoading('財布の神様に接続中...','あなたの財布の波動を読んでいます',()=>{
+    renderWalletResult(color,type,contents,age);
+    showScreen('walletResult');
+  });
+}
+
+function renderWalletResult(color,type,contents,age){
+  const cd=WALLET_COLOR_DATA[color]||WALLET_COLOR_DATA['brown'];
+  const td=WALLET_TYPE_DATA[type]||WALLET_TYPE_DATA['long'];
+
+  let baseScore=cd.score+(td.bonus||0);
+  if(age==='new')baseScore+=8;
+  if(age==='old')baseScore-=10;
+  if(contents.includes('tidy'))baseScore+=5;
+  if(contents.includes('receipts'))baseScore-=8;
+  if(contents.includes('empty'))baseScore-=12;
+  if(contents.includes('photo'))baseScore+=3;
+  baseScore=Math.max(20,Math.min(99,baseScore));
+
+  const scoreColor=baseScore>=80?'#22C55E':baseScore>=60?'#FFD700':'#EF4444';
+  const scoreLabel=baseScore>=80?'✨ 金運絶好調！':baseScore>=60?'💛 金運覚醒中':baseScore<40?'🆘 要・緊急改善':'⚠ 金運停滞気味';
+
+  // SVG ring
+  const r=45,circ=2*Math.PI*r,offset=circ*(1-baseScore/100);
+  const heroEl=document.getElementById('walletResultHero');
+  heroEl.innerHTML=`
+    <div style="margin-bottom:12px;font-size:1.1rem;color:var(--text2);">あなたの財布の金運診断</div>
+    <div class="wallet-score-ring">
+      <svg viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="${r}" fill="none" stroke="rgba(255,215,0,0.1)" stroke-width="10"/>
+        <circle cx="60" cy="60" r="${r}" fill="none" stroke="${scoreColor}" stroke-width="10"
+          stroke-dasharray="${circ}" stroke-dashoffset="${offset}"
+          stroke-linecap="round" style="transition:stroke-dashoffset 1.5s ease;"/>
+      </svg>
+      <div class="score-text">
+        <span class="score-num" style="color:${scoreColor};">${baseScore}</span>
+        <span class="score-label">金運スコア</span>
+      </div>
+    </div>
+    <div style="font-size:1.3rem;font-weight:800;color:${scoreColor};margin-bottom:8px;">${scoreLabel}</div>
+    <div style="font-size:1rem;color:var(--gold);font-weight:700;">${cd.icon} ${cd.name}〔${cd.verdict}〕</div>
+    <div class="divider"></div>
+    <div style="font-size:0.9rem;color:var(--text);line-height:1.7;max-width:500px;margin:0 auto;">${cd.desc}</div>
+  `;
+
+  const grid=document.getElementById('walletResultGrid');
+  grid.innerHTML=`
+    <div class="result-card">
+      <h4><span>🔍</span> 財布タイプ診断</h4>
+      <p>${td.msg}</p>
+    </div>
+    <div class="result-card">
+      <h4><span>📊</span> 金運スコア内訳</h4>
+      <div class="gauge-wrap">
+        <div class="gauge-label"><span>財布カラー</span><span style="color:var(--gold)">${cd.score}点</span></div>
+        <div class="gauge-bar"><div class="gauge-fill" style="width:0%;background:linear-gradient(90deg,${scoreColor},${scoreColor}bb);" data-target="${cd.score}"></div></div>
+      </div>
+      <div class="gauge-wrap">
+        <div class="gauge-label"><span>財布タイプ</span><span style="color:var(--gold)">${50+(td.bonus||0)}点</span></div>
+        <div class="gauge-bar"><div class="gauge-fill" style="width:0%;background:linear-gradient(90deg,#8B5CF6,#6D28D9);" data-target="${50+(td.bonus||0)}"></div></div>
+      </div>
+      <div class="gauge-wrap">
+        <div class="gauge-label"><span>総合スコア</span><span style="color:${scoreColor};font-weight:900;">${baseScore}点</span></div>
+        <div class="gauge-bar"><div class="gauge-fill" style="width:0%;background:linear-gradient(90deg,${scoreColor},${scoreColor}cc);" data-target="${baseScore}"></div></div>
+      </div>
+    </div>
+  `;
+
+  // Action advice
+  const actionsArr=[];
+  if(contents.length>0){
+    contents.forEach(c=>{
+      if(WALLET_CONTENTS_MSG[c])actionsArr.push(WALLET_CONTENTS_MSG[c]);
+    });
+  }
+  // Always add universal tips
+  actionsArr.push('【🟡 黄色い紙の術】財布の中に「黄色い紙（黄色の付箋でOK）」を一枚入れましょう。財布の神様が喜びます。');
+  actionsArr.push('【💫 浄化の儀式】新月の夜に財布を空にして、月光に当てる「財布の浄化」を行いましょう。古い金運の澱を流します。');
+  if(age==='old')actionsArr.push('【🔄 財布交換推奨】今すぐ財布の購入候補を3つ絞りましょう。「一粒万倍日」か「天赦日」に新調すると金運が激変します。');
+
+  const actEl=document.getElementById('walletActions');
+  actEl.innerHTML=`
+    <div class="result-card" style="max-width:860px;margin:0 auto 16px;">
+      <h4><span>⚡</span> 財布の神様からのご神託（今すぐ実践！）</h4>
+      <ul class="action-list">
+        ${actionsArr.map(a=>`<li><span class="action-icon">🔮</span><span>${a}</span></li>`).join('')}
+      </ul>
+    </div>
+  `;
+
+  // キャプチャ用データ保存（財布結果）
+  _lastCaptureData.wallet={
+    score:baseScore,
+    name:cd.name,verdict:cd.verdict,desc:cd.desc,
+    actions:actionsArr,
+  };
+
+  setTimeout(()=>{
+    document.querySelectorAll('.gauge-fill').forEach(el=>{
+      el.style.width=el.dataset.target+'%';
+    });
+  },400);
+}
+
+/* ============================================================
+   LUCKY DAY DIVINATION
+   ============================================================ */
+function runLuckyDayDivination(){
+  const name=document.getElementById('luckyName').value.trim();
+  const bday=document.getElementById('luckyBirthday').value;
+  const month=document.getElementById('luckyMonth').value;
+  const purpose=getRadio('luckyPurpose');
+
+  if(!name){showNotification('⚠ お名前を入力してください');return;}
+  if(!bday){showNotification('⚠ 生年月日を入力してください');return;}
+  if(!month){showNotification('⚠ チェックしたい月を選んでください');return;}
+
+  showLoading('最強チャンス日を算出中...','四柱推命と数秘術のデータを統合しています',()=>{
+    renderLuckyDayResult(name,bday,month,purpose);
+    showScreen('luckyDayResult');
+  });
+}
+
+function renderLuckyDayResult(name,bday,month,purpose){
+  const dateNum=dateToNum(bday);
+  const nameNum=nameToNum(name);
+  const seed=dateNum*7+nameNum*3;
+
+  const [year,mo]=month.split('-').map(Number);
+  const daysInMonth=new Date(year,mo,0).getDate();
+  const firstDay=new Date(year,mo-1,1).getDay();
+
+  // Generate day classifications
+  const dayTypes={};
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=seed+d;
+    let type='normal';
+    if(ds%7===0||ds%11===0)type='lucky-s';
+    else if(ds%5===0||ds%9===0)type='lucky-a';
+    else if(ds%3===0)type='lucky-b';
+    else if(ds%13===0)type='bad';
+    dayTypes[d]=type;
+  }
+
+  const purposeMap={
+    contract:{label:'契約・交渉の吉日',emoji:'📋'},
+    lottery:{label:'宝くじ・勝負の吉日',emoji:'🎰'},
+    invest:{label:'投資・副業開始日',emoji:'📈'},
+    start:{label:'起業・開始の吉日',emoji:'🚀'},
+    self:{label:'自己投資・学びの吉日',emoji:'💎'},
+  };
+  const pd=purposeMap[purpose]||{label:'総合金運吉日',emoji:'⭐'};
+
+  // Pick special days
+  const sDays=Object.entries(dayTypes).filter(([,t])=>t==='lucky-s').map(([d])=>parseInt(d));
+  const aDays=Object.entries(dayTypes).filter(([,t])=>t==='lucky-a').map(([d])=>parseInt(d));
+  const bestDay=sDays.length>0?sDays[0]:aDays[0]||15;
+
+  // キャプチャ用データ保存（チャンス日結果）
+  _lastCaptureData.lucky={
+    name,month:`${year}年${mo}月`,
+    dayTypes,firstDay,
+    bestDayLabel:`${mo}月${bestDay}日`,
+  };
+
+  const heroEl=document.getElementById('luckyResultHero');
+  heroEl.innerHTML=`
+    <div style="font-size:1.1rem;color:var(--text2);margin-bottom:8px;">${name} さんの</div>
+    <div style="font-size:clamp(1.3rem,4vw,1.8rem);font-weight:900;color:var(--gold);">${year}年${mo}月 開運カレンダー</div>
+    <div style="margin:12px 0;font-size:1rem;color:var(--text2);">${pd.emoji} ${pd.label}</div>
+    <div style="font-size:0.9rem;padding:12px 20px;display:inline-block;
+      background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,140,0,0.1));
+      border:1px solid rgba(255,215,0,0.4);border-radius:12px;margin-top:8px;">
+      🏆 最強チャンス日：<span style="font-size:1.4rem;font-weight:900;color:var(--gold);">${mo}月${bestDay}日</span>
+    </div>
+  `;
+
+  // Calendar
+  const calEl=document.getElementById('luckyCalendarArea');
+  const weekDays=['日','月','火','水','木','金','土'];
+  let calHtml=`
+    <div class="result-card" style="max-width:860px;margin:0 auto 16px;">
+      <h4><span>📅</span> 今月の金運カレンダー</h4>
+      <div class="calendar-grid">
+        ${weekDays.map(d=>`<div class="cal-header">${d}</div>`).join('')}
+        ${Array(firstDay).fill('<div class="cal-day empty"></div>').join('')}
+  `;
+  for(let d=1;d<=daysInMonth;d++){
+    const t=dayTypes[d];
+    let label='';
+    if(t==='lucky-s')label='★';
+    else if(t==='lucky-a')label='◎';
+    else if(t==='lucky-b')label='○';
+    else if(t==='bad')label='✕';
+    calHtml+=`<div class="cal-day ${t}">${d}${label?'<br><span style="font-size:0.6rem">'+label+'</span>':''}</div>`;
+  }
+  calHtml+=`</div>
+    <div class="cal-legend">
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:linear-gradient(135deg,#FFD700,#FF8C00)"></div>★ 超強運日（最強チャンス！）</div>
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:rgba(255,215,0,0.4)"></div>◎ 強運日（行動するなら今）</div>
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:rgba(34,197,94,0.3)"></div>○ 小吉日（小さな一歩を）</div>
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:rgba(239,68,68,0.3)"></div>✕ 注意日（大きな決断は避ける）</div>
+    </div>
+  </div>`;
+  calEl.innerHTML=calHtml;
+
+  // Result grid
+  const topDays=sDays.slice(0,3).join('日・')+(sDays.length>0?'日':'なし');
+  const avoidDays=Object.entries(dayTypes).filter(([,t])=>t==='bad').map(([d])=>d+'日').join('・')||'特になし';
+
+  const grid=document.getElementById('luckyResultGrid');
+  grid.innerHTML=`
+    <div class="result-card">
+      <h4><span>🏆</span> ${pd.emoji} ${pd.label}</h4>
+      <p class="highlight" style="font-size:1.1rem;">${mo}月${bestDay}日が最強！</p>
+      <p style="margin-top:8px;">超強運日：<span class="highlight">${topDays||mo+'月'+bestDay+'日'}</span><br>
+      この日は朝から行動開始することが大切です。</p>
+    </div>
+    <div class="result-card">
+      <h4><span>⚠️</span> 要注意日</h4>
+      <p>大きな決断を避けるべき日：<br><span class="danger">${avoidDays}</span><br>
+      <span style="font-size:0.85rem;color:var(--text2);">この日は仕込みと準備に専念しましょう。</span></p>
+    </div>
+    <div class="result-card">
+      <h4><span>💡</span> 最強日の過ごし方</h4>
+      <ul class="action-list" style="margin-top:4px;">
+        <li><span class="action-icon">🌅</span>朝6時〜8時に行動を開始する</li>
+        <li><span class="action-icon">💰</span>財布に新しいお札を補充する</li>
+        <li><span class="action-icon">📞</span>重要な連絡・交渉はこの日に</li>
+        <li><span class="action-icon">🙏</span>神社・お寺に参拝して気を整える</li>
+      </ul>
+    </div>
+    <div class="result-card">
+      <h4><span>📊</span> あなたの数秘パワー</h4>
+      <p>誕生数：<span class="highlight" style="font-size:1.3rem;">${dateToNum(bday)}</span><br>
+      名前数：<span class="highlight" style="font-size:1.3rem;">${nameToNum(name)%9+1}</span><br>
+      運命数：<span class="highlight" style="font-size:1.3rem;">${seed%9+1}</span></p>
+      <div class="divider"></div>
+      <p style="font-size:0.85rem;">あなたのパワーナンバーは<span class="highlight">${seed%9+1}</span>。
+      価格交渉・支払いの時にこの数字を意識してみてください。</p>
+    </div>
+  `;
+}
+
+/* ============================================================
+   COMPLETE SET
+   ============================================================ */
+const GOLD_VEIN_TYPES=[
+  {type:'対人・コミュ型',emoji:'🤝',desc:'人との繋がりからお金が生まれます。営業・交渉・人脈ビジネスが金脈の源流です。',key:'人への投資・信頼の積み重ね'},
+  {type:'技術・スキル型',emoji:'🔧',desc:'あなたの持つ専門的なスキルが最大の資産です。学べば学ぶほど収入が増える構造です。',key:'スキルアップ・資格取得・副業'},
+  {type:'創造・アイデア型',emoji:'💡',desc:'独自のアイデアと創造力がお金の源泉。コンテンツ制作・起業・発明があなたの金脈。',key:'創造的な副業・コンテンツ発信'},
+  {type:'継続・積立型',emoji:'📈',desc:'コツコツ積み上げることで大きな富を築きます。複利の力を最大に活かしましょう。',key:'長期投資・積立・本業の昇給'},
+  {type:'直感・引き寄せ型',emoji:'✨',desc:'直感を信じて動いたときにお金が入る体質です。第一印象を大切に行動することが鍵。',key:'直感型ビジネス・縁起重視の行動'},
+];
+
+const POVERTY_HABITS=[
+  {habit:'「いつかやる」先延ばし病',remedy:'明日できることは今日やる。24時間ルールでなく「24分ルール」を採用してください。'},
+  {habit:'比較・嫉妬による負のエネルギー',remedy:'他人の成功を「自分の予告編」だと思いましょう。成功者に近づくことが最短ルートです。'},
+  {habit:'お金の話を「汚い」と思う潜在意識',remedy:'お金は感謝の交換媒体です。お金を大切に扱い、喜んで受け取る練習をしましょう。'},
+  {habit:'ネガティブなお金の口癖',remedy:'「お金がない」という言葉を今すぐやめる。「お金を集めている途中」に変換しましょう。'},
+  {habit:'緊急ではないお金の使いすぎ',remedy:'支出を「投資・消費・浪費」に分類しましょう。浪費を20%減らすだけで年間数十万円の差になります。'},
+  {habit:'孤独な戦い（仲間なしの孤軍奮闘）',remedy:'金運の高い人と定期的に会いましょう。環境は運命を変えます。'},
+  {habit:'健康への無関心',remedy:'あなた自身が最大の資産。睡眠・運動・食事への投資は最高のROIを生みます。'},
+];
+
+const GOLDEN_TURNING_POINTS=[
+  {period:'3ヶ月以内',type:'小さな転機',desc:'今から3ヶ月間は「準備期間」。種を蒔けば次の季節に必ず花が咲きます。',action:'今すぐ副業を1つ始める・スキルアップの習慣をつける'},
+  {period:'半年〜1年',type:'本格的な変化',desc:'半年後、あなたのエネルギーは大きく変わります。今の積み重ねが爆発的な結果になります。',action:'6ヶ月の明確な収入目標を設定する'},
+  {period:'1年〜3年',type:'黄金の収穫期',desc:'忍耐の時期を越えると、複利のように成果が加速します。この時期に大きな収入源が開花します。',action:'今から投資と副業の両輪を回し始める'},
+  {period:'3年以降',type:'財の確立期',desc:'長期的な視野で動いた人だけが手にできる「真の豊かさ」の段階。ここで夢が現実になります。',action:'資産形成の仕組みを作り自動化する'},
+];
+
+function runCompleteSet(){
+  const name=document.getElementById('completeName').value.trim();
+  const bday=document.getElementById('completeBirthday').value;
+  const income=getRadio('income');
+  const saving=getRadio('saving');
+  const color=getRadio('colorInsight');
+
+  if(!name){showNotification('⚠ お名前を入力してください');return;}
+  if(!bday){showNotification('⚠ 生年月日を入力してください');return;}
+
+  showLoading('完全鑑定書を作成中...','あなたの魂のデータと宇宙の記録を照合しています',()=>{
+    renderCompleteSetResult(name,bday,income,saving,color);
+    showScreen('completeSetResult');
+  });
+}
+
+function renderCompleteSetResult(name,bday,income,saving,color){
+  const nameNum=nameToNum(name);
+  const dateNum=dateToNum(bday);
+  const seed=nameNum*dateNum;
+
+  // Picks
+  const veinIdx=(nameNum+dateNum)%GOLD_VEIN_TYPES.length;
+  const vein=GOLD_VEIN_TYPES[veinIdx];
+
+  const habitIdx=(seed+2)%POVERTY_HABITS.length;
+  const habit2Idx=(seed+5)%POVERTY_HABITS.length;
+  const habitIdx3=(seed+3)%POVERTY_HABITS.length;
+
+  const tpIdx=(dateNum)%GOLDEN_TURNING_POINTS.length;
+  const tp=GOLDEN_TURNING_POINTS[tpIdx];
+
+  // Monster for complete set
+  const mIdx=(seed-1+MONSTERS.length)%MONSTERS.length;
+  const monster=MONSTERS[((mIdx%MONSTERS.length)+MONSTERS.length)%MONSTERS.length];
+
+  // Past life
+  const pastLives=[
+    {era:'江戸時代の豪商',debt:'贅沢三昧で周囲に恨まれ、財産を散財しきった過去があります。今世では「感謝しながら稼ぐ」ことで、前世の借金を返せます。',lesson:'お金は社会のためのツール'},
+    {era:'中世ヨーロッパの錬金術師',debt:'知識に固執し、お金に無頓着だった前世。高い知性はありながら世俗の富を拒んだことで、今世に反省期間が生まれました。',lesson:'知識を収入に変換する勇気'},
+    {era:'古代中国の占い師',debt:'人の運勢を見続け、自分自身のお金の管理をおろそかにした前世。今世では「自分自身の占い師」になる時です。',lesson:'自己管理と霊感のバランス'},
+    {era:'戦国時代の武将',debt:'勝利のために全財産を賭け続けた前世。今世では守ることと攻めることのバランスを学ぶ使命があります。',lesson:'攻守のバランス'},
+    {era:'インドの商人',debt:'商才はあったが、独占欲が強く周囲と分かち合わなかった前世の業があります。今世では「与えることが豊かさの源」と気づく旅をしています。',lesson:'与えることで受け取る法則'},
+  ];
+  const pl=pastLives[(seed+nameNum)%pastLives.length];
+
+  // 逆金運
+  const reverseItems=getReverseFortune(monster.id);
+
+  // キャプチャ用データ保存（完全鑑定結果）
+  _lastCaptureData.complete={
+    name, dateNum,
+    monster,
+    vein,
+    habits:[
+      POVERTY_HABITS[habitIdx],
+      POVERTY_HABITS[habit2Idx],
+      POVERTY_HABITS[habitIdx3],
+    ],
+    tp,
+    pastLife:pl,
+  };
+
+  const el=document.getElementById('completeSetContent');
+  el.innerHTML=`
+    <div class="complete-header fade-in">
+      <div style="font-size:0.8rem;color:rgba(192,132,252,0.8);letter-spacing:0.2em;margin-bottom:8px;">✨ 完全鑑定書 ✨</div>
+      <h2>${name} さんの黄金の鑑定書</h2>
+      <div style="font-size:0.85rem;color:var(--text2);margin-top:8px;">${monster.emoji} 金運モンスター：${monster.name} ｜ 運命数：${dateNum}</div>
+    </div>
+
+    <div class="step-section fade-in-delay-1" data-step="1">
+      <span class="step-badge">⚡ STEP 1 / 診断</span>
+      <h3>🌊 金脈の源流診断</h3>
+      <p>
+        <span style="font-size:1.2rem;">${vein.emoji}</span>
+        あなたの金脈タイプは「<span style="color:var(--gold);font-weight:800;">${vein.type}</span>」です。<br><br>
+        ${vein.desc}<br><br>
+        <strong style="color:var(--gold);">金脈を掘り当てるキーワード：</strong>${vein.key}
+      </p>
+    </div>
+
+    <div class="step-section fade-in-delay-2" data-step="2">
+      <span class="step-badge">🔥 STEP 2 / 対策</span>
+      <h3>👹 貧乏神の追い出し方</h3>
+      <p style="margin-bottom:14px;">今あなたの金運を下げている習慣と、その具体的な解決策を特定しました。</p>
+      <ul class="action-list">
+        <li>
+          <span class="action-icon">💀</span>
+          <div>
+            <div style="color:#F87171;font-weight:700;margin-bottom:4px;">貧乏神習慣①：${POVERTY_HABITS[habitIdx].habit}</div>
+            <div>🔮 <span style="color:var(--gold);">解決策：</span>${POVERTY_HABITS[habitIdx].remedy}</div>
+          </div>
+        </li>
+        <li>
+          <span class="action-icon">💀</span>
+          <div>
+            <div style="color:#F87171;font-weight:700;margin-bottom:4px;">貧乏神習慣②：${POVERTY_HABITS[habit2Idx].habit}</div>
+            <div>🔮 <span style="color:var(--gold);">解決策：</span>${POVERTY_HABITS[habit2Idx].remedy}</div>
+          </div>
+        </li>
+        <li>
+          <span class="action-icon">💀</span>
+          <div>
+            <div style="color:#F87171;font-weight:700;margin-bottom:4px;">貧乏神習慣③：${POVERTY_HABITS[habitIdx3].habit}</div>
+            <div>🔮 <span style="color:var(--gold);">解決策：</span>${POVERTY_HABITS[habitIdx3].remedy}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="step-section fade-in-delay-3" data-step="3">
+      <span class="step-badge">🌟 STEP 3 / 予言</span>
+      <h3>🏆 黄金の転換期</h3>
+      <p>
+        あなたに訪れる最大の金運転換期は…<br><br>
+        <span style="display:inline-block;background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,140,0,0.1));
+          border:1px solid rgba(255,215,0,0.4);border-radius:12px;padding:12px 24px;
+          font-size:1.2rem;font-weight:800;color:var(--gold);margin:8px 0;"
+        >⏰ ${tp.period}（${tp.type}）</span><br><br>
+        ${tp.desc}<br><br>
+        <strong style="color:var(--gold);">今すぐやるべきこと：</strong>${tp.action}
+      </p>
+    </div>
+
+    <div class="past-life-box fade-in-delay-3">
+      <div class="past-life-title">🌙 前世の借金 SPECIAL READING</div>
+      <div class="past-life-content">
+        あなたの前世は「<em>${pl.era}</em>」でした。<br><br>
+        ${pl.debt}<br><br>
+        今世での学び：<em>${pl.lesson}</em>
+      </div>
+    </div>
+
+    <div class="reverse-fortune-box fade-in-delay-4">
+      <div class="reverse-fortune-title"><span>💀</span> 逆・金運占い〜これをやると${name}さんは破産する〜</div>
+      <ul class="reverse-list">
+        ${reverseItems.map(r=>`<li><span class="reverse-icon">⚠️</span>${r}</li>`).join('')}
+      </ul>
+    </div>
+  `;
+}
+
+/* ============================================================
+   IMAGE SAVE — CAPTURE SYSTEM
+   ============================================================ */
+
+// 直近の鑑定データを保持
+let _lastCaptureData={};
+
+/**
+ * saveResultImage(type)
+ * type: 'monster' | 'wallet' | 'lucky' | 'complete'
+ */
+function saveResultImage(type){
+  const card=document.getElementById('captureCard');
+  card.innerHTML='';
+
+  const builders={
+    monster: buildMonsterCard,
+    wallet:  buildWalletCard,
+    lucky:   buildLuckyCard,
+    complete:buildCompleteCard,
+  };
+  const builder=builders[type];
+  if(!builder){showNotification('⚠ 対象が見つかりません');return;}
+
+  card.innerHTML=builder();
+  card.style.display='block';
+
+  showNotification('🖼 画像を生成中...');
+
+  // html2canvas が読み込めているか確認
+  if(typeof html2canvas==='undefined'){
+    // フォールバック：DOM直接 Canvas 描画
+    fallbackCapture(type);
+    return;
+  }
+
+  setTimeout(()=>{
+    html2canvas(card,{
+      backgroundColor:'#0a0508',
+      scale:2,
+      useCORS:true,
+      allowTaint:true,
+      logging:false,
+      width:600,
+      windowWidth:600,
+    }).then(canvas=>{
+      card.style.display='none';
+      const dataURL=canvas.toDataURL('image/png');
+      _lastCaptureData.dataURL=dataURL;
+      _lastCaptureData.type=type;
+      showCaptureOverlay(dataURL);
+    }).catch(err=>{
+      card.style.display='none';
+      console.error(err);
+      fallbackCapture(type);
+    });
+  },200);
+}
+
+function showCaptureOverlay(dataURL){
+  const overlay=document.getElementById('captureOverlay');
+  const preview=document.getElementById('capturePreview');
+  preview.src=dataURL;
+  overlay.classList.add('active');
+  document.body.style.overflow='hidden';
+}
+
+function closeCaptureOverlay(){
+  document.getElementById('captureOverlay').classList.remove('active');
+  document.body.style.overflow='';
+}
+
+function downloadCapturedImage(){
+  const dataURL=_lastCaptureData.dataURL;
+  if(!dataURL){showNotification('⚠ 画像データがありません');return;}
+  const typeNames={
+    monster:'kinmon_monster',wallet:'kinmon_wallet',
+    lucky:'kinmon_lucky',complete:'kinmon_complete'
+  };
+  const fname=(typeNames[_lastCaptureData.type]||'kinmon_result')+'_'+getTimestamp()+'.png';
+  const a=document.createElement('a');
+  a.href=dataURL;a.download=fname;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);
+  showNotification('✅ 画像を保存しました！');
+}
+
+function getTimestamp(){
+  const d=new Date();
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+/* ---- Fallback: Canvas 2D 直接描画 ---- */
+function fallbackCapture(type){
+  const W=600,PADDING=28;
+  let items=[];
+
+  if(type==='monster'&&_lastCaptureData.monster){
+    const m=_lastCaptureData.monster;
+    items=[
+      {kind:'header'},
+      {kind:'bigEmoji',text:m.emoji},
+      {kind:'title',text:m.name},
+      {kind:'sub',text:m.type},
+      {kind:'score',text:'金運スコア '+m.score},
+      {kind:'divider'},
+      {kind:'label',text:'金運の正体'},
+      {kind:'body',text:m.desc},
+      {kind:'label',text:'向いている稼ぎ方'},
+      {kind:'body',text:m.earn},
+      {kind:'label',text:'ラッキー要素'},
+      {kind:'body',text:m.lucky},
+      {kind:'label',text:'アドバイス'},
+      {kind:'body',text:m.advice},
+      {kind:'footer'},
+    ];
+  } else if(type==='wallet'&&_lastCaptureData.wallet){
+    const w=_lastCaptureData.wallet;
+    items=[
+      {kind:'header'},
+      {kind:'bigEmoji',text:'👛'},
+      {kind:'title',text:w.name},
+      {kind:'sub',text:w.verdict},
+      {kind:'score',text:'金運スコア '+w.score},
+      {kind:'divider'},
+      {kind:'body',text:w.desc},
+      {kind:'footer'},
+    ];
+  } else if(type==='lucky'&&_lastCaptureData.lucky){
+    const lk=_lastCaptureData.lucky;
+    items=[
+      {kind:'header'},
+      {kind:'bigEmoji',text:'📅'},
+      {kind:'title',text:lk.name+' さんの開運カレンダー'},
+      {kind:'sub',text:lk.month+' 金運チャンス日'},
+      {kind:'divider'},
+      {kind:'score',text:'最強チャンス日：'+lk.bestDay},
+      {kind:'body',text:'この日に行動を起こすことで金運が爆発的に高まります。\n朝から積極的に動きましょう！'},
+      {kind:'footer'},
+    ];
+  } else if(type==='complete'&&_lastCaptureData.complete){
+    const c=_lastCaptureData.complete;
+    items=[
+      {kind:'header'},
+      {kind:'bigEmoji',text:'👑'},
+      {kind:'title',text:c.name+' さんの黄金の鑑定書'},
+      {kind:'sub',text:'金運爆上げ3点完全鑑定'},
+      {kind:'divider'},
+      {kind:'label',text:'STEP1 金脈の源流'},
+      {kind:'body',text:c.vein},
+      {kind:'label',text:'STEP2 貧乏神の追い出し方'},
+      {kind:'body',text:c.poverty},
+      {kind:'label',text:'STEP3 黄金の転換期'},
+      {kind:'body',text:c.turning},
+      {kind:'footer'},
+    ];
+  } else {
+    showNotification('⚠ 先に占いを実行してください');
+    return;
+  }
+
+  // Measure height
+  const tmpCvs=document.createElement('canvas');
+  const tmpCtx=tmpCvs.getContext('2d');
+  let H=0;
+  for(const item of items){
+    if(item.kind==='header')H+=80;
+    else if(item.kind==='footer')H+=50;
+    else if(item.kind==='bigEmoji')H+=80;
+    else if(item.kind==='title')H+=50;
+    else if(item.kind==='sub')H+=30;
+    else if(item.kind==='score')H+=50;
+    else if(item.kind==='divider')H+=20;
+    else if(item.kind==='label')H+=36;
+    else if(item.kind==='body'){H+=measureTextHeight(tmpCtx,item.text,W-PADDING*2,15)+24;}
+  }
+  H+=40;
+
+  const cvs=document.createElement('canvas');
+  cvs.width=W*2;cvs.height=H*2;
+  const ctx=cvs.getContext('2d');
+  ctx.scale(2,2);
+
+  // BG
+  ctx.fillStyle='#0a0508';
+  ctx.fillRect(0,0,W,H);
+
+  let y=0;
+  for(const item of items){
+    if(item.kind==='header'){
+      ctx.fillStyle='#1a1208';
+      ctx.fillRect(0,0,W,72);
+      ctx.font='bold 11px sans-serif';
+      ctx.fillStyle='#C9A84C';
+      ctx.fillText('💰  KINMON ORACLE  ～金運モンスター神託～',PADDING,30);
+      ctx.fillStyle='rgba(255,215,0,0.3)';
+      ctx.fillRect(0,72,W,1);
+      y=80;
+    } else if(item.kind==='bigEmoji'){
+      ctx.font='52px serif';
+      ctx.textAlign='center';
+      ctx.fillText(item.text,W/2,y+56);
+      ctx.textAlign='left';
+      y+=80;
+    } else if(item.kind==='title'){
+      ctx.font='bold 22px sans-serif';
+      ctx.fillStyle='#FFD700';
+      ctx.textAlign='center';
+      ctx.fillText(item.text,W/2,y+30);
+      ctx.textAlign='left';
+      y+=50;
+    } else if(item.kind==='sub'){
+      ctx.font='13px sans-serif';
+      ctx.fillStyle='#C9A84C';
+      ctx.textAlign='center';
+      ctx.fillText(item.text,W/2,y+18);
+      ctx.textAlign='left';
+      y+=30;
+    } else if(item.kind==='score'){
+      ctx.fillStyle='rgba(255,215,0,0.1)';
+      roundRect(ctx,PADDING,y+4,W-PADDING*2,36,8);
+      ctx.fill();
+      ctx.font='bold 16px sans-serif';
+      ctx.fillStyle='#FFD700';
+      ctx.textAlign='center';
+      ctx.fillText(item.text,W/2,y+27);
+      ctx.textAlign='left';
+      y+=50;
+    } else if(item.kind==='divider'){
+      ctx.fillStyle='rgba(255,215,0,0.2)';
+      ctx.fillRect(PADDING,y+8,W-PADDING*2,1);
+      y+=20;
+    } else if(item.kind==='label'){
+      ctx.font='bold 11px sans-serif';
+      ctx.fillStyle='#9333EA';
+      ctx.fillText('◆ '+item.text,PADDING,y+20);
+      y+=36;
+    } else if(item.kind==='body'){
+      const lh=15;
+      ctx.font='13px sans-serif';
+      ctx.fillStyle='#F5E6C8';
+      const lines=wrapText(ctx,item.text,W-PADDING*2);
+      lines.forEach((line,i)=>{
+        ctx.fillText(line,PADDING,y+lh*(i+1));
+      });
+      y+=lines.length*lh+24;
+    } else if(item.kind==='footer'){
+      ctx.fillStyle='rgba(255,215,0,0.04)';
+      ctx.fillRect(0,H-44,W,44);
+      ctx.fillStyle='rgba(255,215,0,0.5)';
+      ctx.fillRect(0,H-44,W,1);
+      ctx.font='10px sans-serif';
+      ctx.fillStyle='rgba(201,168,76,0.5)';
+      ctx.textAlign='center';
+      ctx.fillText('KINMON ORACLE  ～金運モンスター神託～  generated by kinmon-oracle',W/2,H-18);
+      ctx.textAlign='left';
+    }
+  }
+
+  const dataURL=cvs.toDataURL('image/png');
+  _lastCaptureData.dataURL=dataURL;
+  _lastCaptureData.type=type;
+  showCaptureOverlay(dataURL);
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+function wrapText(ctx,text,maxW){
+  if(!text)return[''];
+  const lines=[];
+  const paragraphs=text.replace(/\\n/g,'\n').split('\n');
+  for(const para of paragraphs){
+    const words=para.split('');
+    let line='';
+    for(const ch of words){
+      const test=line+ch;
+      if(ctx.measureText(test).width>maxW&&line.length>0){
+        lines.push(line);
+        line=ch;
+      } else {
+        line=test;
+      }
+    }
+    if(line)lines.push(line);
+    if(para==='')lines.push('');
+  }
+  return lines.length>0?lines:[''];
+}
+
+function measureTextHeight(ctx,text,maxW,lh){
+  return wrapText(ctx,text,maxW).length*lh;
+}
+
+/* ---- Card HTML builders for html2canvas ---- */
+function buildMonsterCard(){
+  const d=_lastCaptureData.monster;
+  if(!d)return '<div style="color:#fff;padding:40px">データなし</div>';
+  const gaugeHtml=Object.entries(d.gauges||{}).map(([k,v])=>`
+    <div class="capture-gauge-row">
+      <div class="capture-gauge-label-row"><span>${k}</span><span style="color:#FFD700">${v}</span></div>
+      <div class="capture-gauge-bar"><div class="capture-gauge-fill" style="width:${v}%"></div></div>
+    </div>
+  `).join('');
+  return `
+  <div class="capture-header">
+    <div class="capture-logo">💰</div>
+    <div><div class="capture-app-name">KINMON ORACLE</div><div class="capture-app-title">金運モンスター神託</div></div>
+  </div>
+  <div class="capture-body">
+    <div class="capture-hero">
+      <span class="capture-monster-emoji">${d.emoji}</span>
+      <div class="capture-result-name">${d.name}</div>
+      <div class="capture-result-sub">${d.type}</div>
+    </div>
+    <div class="capture-score-wrap">
+      <div class="capture-score-box">
+        <span class="capture-score-num">${d.score}</span>
+        <span class="capture-score-label">金運スコア</span>
+      </div>
+      <div class="capture-score-box">
+        <span class="capture-score-num" style="font-size:1.3rem;">${d.earn.split('・')[0]||'―'}</span>
+        <span class="capture-score-label">向いている稼ぎ方</span>
+      </div>
+    </div>
+    <div class="capture-rows">
+      <div class="capture-row-item">
+        <div class="capture-row-label">✅ 強み</div>
+        <div class="capture-row-value gold">${d.strength}</div>
+      </div>
+      <div class="capture-row-item">
+        <div class="capture-row-label">⚠️ 弱み</div>
+        <div class="capture-row-value" style="color:#F87171">${d.weakness}</div>
+      </div>
+    </div>
+    <div class="capture-gauges">${gaugeHtml}</div>
+    <div class="capture-advice"><strong>🔮 アドバイス：</strong>${d.advice}</div>
+    <div class="capture-row-item" style="margin-bottom:16px">
+      <div class="capture-row-label">🍀 ラッキー要素</div>
+      <div class="capture-row-value gold">${d.lucky}</div>
+    </div>
+  </div>
+  <div class="capture-footer">
+    <div class="capture-footer-text">💰 KINMON ORACLE ～金運モンスター神託～</div>
+  </div>`;
+}
+
+function buildWalletCard(){
+  const d=_lastCaptureData.wallet;
+  if(!d)return '<div style="color:#fff;padding:40px">データなし</div>';
+  const scoreColor=d.score>=80?'#22C55E':d.score>=60?'#FFD700':'#EF4444';
+  const scoreLabel=d.score>=80?'✨ 金運絶好調！':d.score>=60?'💛 金運覚醒中':d.score<40?'🆘 要・緊急改善':'⚠ 金運停滞気味';
+  const actHtml=(d.actions||[]).slice(0,3).map(a=>`
+    <div style="padding:8px 0;border-bottom:1px solid rgba(255,215,0,0.1);font-size:0.82rem;color:#F5E6C8;line-height:1.6;">🔮 ${a}</div>
+  `).join('');
+  return `
+  <div class="capture-header">
+    <div class="capture-logo">💰</div>
+    <div><div class="capture-app-name">KINMON ORACLE</div><div class="capture-app-title">財布の神様からのご神託</div></div>
+  </div>
+  <div class="capture-body">
+    <div class="capture-hero">
+      <span class="capture-monster-emoji">👛</span>
+      <div class="capture-result-name" style="color:${scoreColor}">${d.name}</div>
+      <div class="capture-result-sub">${d.verdict}</div>
+    </div>
+    <div class="capture-score-wrap">
+      <div class="capture-score-box">
+        <span class="capture-score-num" style="color:${scoreColor}">${d.score}</span>
+        <span class="capture-score-label">金運スコア</span>
+      </div>
+      <div class="capture-score-box">
+        <span class="capture-score-num" style="font-size:1.4rem;color:${scoreColor}">${scoreLabel.replace(/[✨💛⚠🆘]/g,'').trim()}</span>
+        <span class="capture-score-label">総合判定</span>
+      </div>
+    </div>
+    <div class="capture-advice" style="margin-bottom:14px">${d.desc}</div>
+    <div style="font-size:0.78rem;color:#C084FC;margin-bottom:8px;">⚡ 今すぐ実践！財布の神様のご神託</div>
+    ${actHtml}
+  </div>
+  <div class="capture-footer">
+    <div class="capture-footer-text">💰 KINMON ORACLE ～金運モンスター神託～</div>
+  </div>`;
+}
+
+function buildLuckyCard(){
+  const d=_lastCaptureData.lucky;
+  if(!d)return '<div style="color:#fff;padding:40px">データなし</div>';
+  // mini calendar grid
+  const wd=['日','月','火','水','木','金','土'];
+  const headerCells=wd.map(w=>`<div style="font-size:0.65rem;color:#C9A84C;text-align:center;padding:3px 0">${w}</div>`).join('');
+  const emptyCells=Array(d.firstDay).fill('<div></div>').join('');
+  const typeStyle={
+    'lucky-s':'background:linear-gradient(135deg,#FFD700,#FF8C00);color:#1a0a00;font-weight:900;',
+    'lucky-a':'background:rgba(255,215,0,0.2);color:#FFD700;border:1px solid rgba(255,215,0,0.4);',
+    'lucky-b':'background:rgba(34,197,94,0.15);color:#4ADE80;',
+    'bad':'background:rgba(239,68,68,0.12);color:#F87171;',
+    'normal':'background:rgba(255,255,255,0.04);color:#999;',
+  };
+  const dayCells=Object.entries(d.dayTypes).map(([day,t])=>{
+    const s=typeStyle[t]||typeStyle.normal;
+    return `<div style="font-size:0.68rem;text-align:center;padding:4px 1px;border-radius:5px;${s}">${day}</div>`;
+  }).join('');
+  return `
+  <div class="capture-header">
+    <div class="capture-logo">💰</div>
+    <div><div class="capture-app-name">KINMON ORACLE</div><div class="capture-app-title">成金・爆上げチャンス日</div></div>
+  </div>
+  <div class="capture-body">
+    <div class="capture-hero">
+      <span class="capture-monster-emoji">📅</span>
+      <div class="capture-result-name" style="font-size:1.3rem">${d.name} さんの開運カレンダー</div>
+      <div class="capture-result-sub">${d.month}</div>
+    </div>
+    <div style="text-align:center;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);
+      border-radius:10px;padding:12px;margin-bottom:16px;">
+      <div style="font-size:0.75rem;color:#C9A84C;margin-bottom:4px;">🏆 最強チャンス日</div>
+      <div style="font-size:1.6rem;font-weight:900;color:#FFD700">${d.bestDayLabel}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:12px;">
+      ${headerCells}${emptyCells}${dayCells}
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:0.7rem;color:#C9A84C;">
+      <span>★ 超強運日</span><span>◎ 強運日</span><span>○ 小吉日</span><span style="color:#F87171">✕ 注意日</span>
+    </div>
+  </div>
+  <div class="capture-footer">
+    <div class="capture-footer-text">💰 KINMON ORACLE ～金運モンスター神託～</div>
+  </div>`;
+}
+
+function buildCompleteCard(){
+  const d=_lastCaptureData.complete;
+  if(!d)return '<div style="color:#fff;padding:40px">データなし</div>';
+  return `
+  <div class="capture-header">
+    <div class="capture-logo">💰</div>
+    <div><div class="capture-app-name">KINMON ORACLE</div><div class="capture-app-title">金運爆上げ3点完全鑑定</div></div>
+  </div>
+  <div class="capture-body">
+    <div class="capture-hero">
+      <span class="capture-monster-emoji">👑</span>
+      <div class="capture-result-name" style="font-size:1.3rem">${d.name} さんの黄金の鑑定書</div>
+      <div class="capture-result-sub">${d.monster.emoji} ${d.monster.name} ｜ 運命数：${d.dateNum}</div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="display:inline-block;background:linear-gradient(135deg,#6B21A8,#9333EA);
+        color:#fff;font-size:0.7rem;padding:3px 10px;border-radius:8px;margin-bottom:8px;">⚡ STEP 1 金脈の源流</div>
+      <div class="capture-advice" style="margin-bottom:0">${d.vein.emoji} <strong style="color:#FFD700">${d.vein.type}</strong><br>${d.vein.desc}</div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="display:inline-block;background:linear-gradient(135deg,#6B21A8,#9333EA);
+        color:#fff;font-size:0.7rem;padding:3px 10px;border-radius:8px;margin-bottom:8px;">🔥 STEP 2 貧乏神の追い出し方</div>
+      <div class="capture-row-item">
+        <div class="capture-row-label">解決策①</div>
+        <div class="capture-row-value">${d.habits[0].remedy}</div>
+      </div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="display:inline-block;background:linear-gradient(135deg,#6B21A8,#9333EA);
+        color:#fff;font-size:0.7rem;padding:3px 10px;border-radius:8px;margin-bottom:8px;">🌟 STEP 3 黄金の転換期</div>
+      <div style="background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);
+        border-radius:10px;padding:12px;font-size:0.88rem;color:#F5E6C8;">
+        ⏰ <strong style="color:#FFD700">${d.tp.period}（${d.tp.type}）</strong><br>${d.tp.desc}
+      </div>
+    </div>
+  </div>
+  <div class="capture-footer">
+    <div class="capture-footer-text">💰 KINMON ORACLE ～金運モンスター神託～</div>
+  </div>`;
+}
+
+/* ============================================================
+   NOTIFICATION
+   ============================================================ */
+function showNotification(msg){
+  const n=document.getElementById('notification');
+  n.textContent=msg;n.classList.add('show');
+  setTimeout(()=>n.classList.remove('show'),2500);
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+// Set default date for inputs
+window.addEventListener('DOMContentLoaded',()=>{
+  const today=new Date();
+  const todayStr=today.toISOString().split('T')[0];
+
+  // Default birthday: 30 years ago
+  const birthDefault=new Date(today);
+  birthDefault.setFullYear(birthDefault.getFullYear()-30);
+  const birthStr=birthDefault.toISOString().split('T')[0];
+
+  ['monsterBirthday','luckyBirthday','completeBirthday'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.value=birthStr;
+  });
+
+  // Default month: current
+  const monthStr=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
+  const luckyM=document.getElementById('luckyMonth');
+  if(luckyM)luckyM.value=monthStr;
+
+  // Show home
+  showScreen('homeScreen');
+});
+</script>
+</body>
+</html>
