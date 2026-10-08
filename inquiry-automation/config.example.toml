@@ -1,0 +1,93 @@
+# config.example.toml をコピーして config.toml を作り、お客さんごとに書き換える。
+# パスワードやトークンは "env:変数名" と書くと環境変数から読む（ファイルに直接書かない）。
+
+data_dir = "data"   # 顧客CSV・処理済み記録・下書き(.eml)の保存先
+
+[business]
+company_name = "株式会社サンプル"
+signature = """
+--
+株式会社サンプル お問い合わせ窓口
+TEL 03-0000-0000（平日 9:00〜18:00）
+"""
+# AIが返信に使ってよい事実。ここに無いことはAIは約束しない。
+knowledge = """
+- 営業時間: 平日 9:00〜18:00（土日祝休み）
+- サービス資料: https://example.com/docs から PDF でダウンロードできる
+- 見積は内容確認のうえ担当者から2営業日以内に連絡
+"""
+categories = ["見積依頼", "資料請求", "予約・日程調整", "質問", "クレーム", "営業・勧誘", "その他"]
+tone = "丁寧で簡潔なビジネス敬語"
+
+[ai]
+model = "claude-opus-5-5"   # ANTHROPIC_API_KEY 環境変数が必要
+
+# ---- 受信方式（どれか1つ） --------------------------------------------
+[source]
+type = "imap"          # "imap" / "webhook"（転送方式） / "eml_dir"（動作確認用）
+# --- webhook のとき ---
+# type = "webhook"
+# host = "0.0.0.0"
+# port = 8025
+# secret = "env:INBOUND_SECRET"
+# --- eml_dir のとき ---
+# type = "eml_dir"
+# path = "samples"
+
+# ---- メールボックス（IMAP/SMTP） ----------------------------------------
+# 受信だけでなく「下書きフォルダへの保存」と「自動返信の送信」にも使う。
+# webhook 方式で [mailbox] を書かない場合、下書きは data/drafts/*.eml に保存され、
+# 返信案は通知にも載る。
+[mailbox]
+host = "imap.gmail.com"
+username = "info@example.com"
+password = "env:MAIL_PASSWORD"      # アプリパスワード
+# oauth2_token = "env:MAIL_OAUTH_TOKEN"  # Microsoft 365 等は OAuth のアクセストークン
+smtp_host = "smtp.gmail.com"
+smtp_port = 587
+# drafts_folder = "Drafts"   # 自動検出できない場合だけ指定
+
+# よく使う設定例:
+#  Gmail             host=imap.gmail.com        smtp_host=smtp.gmail.com       smtp_port=587
+#  Microsoft 365     host=outlook.office365.com smtp_host=smtp.office365.com   smtp_port=587 (oauth2_token)
+#  Yahoo!メール       host=imap.mail.yahoo.co.jp smtp_host=smtp.mail.yahoo.co.jp smtp_port=465 smtp_ssl=true
+#  Xserver           host=svXXXX.xserver.jp     smtp_host=svXXXX.xserver.jp    smtp_port=465 smtp_ssl=true
+#  さくら             host=XXXX.sakura.ne.jp     smtp_host=XXXX.sakura.ne.jp    smtp_port=587
+#  ロリポップ          host=imap.lolipop.jp       smtp_host=smtp.lolipop.jp      smtp_port=465 smtp_ssl=true
+
+[reply]
+# from_address = "info@example.com"   # 省略時は mailbox.username
+from_name = "株式会社サンプル"
+ignore_addresses = []                 # 社内アドレスなど、処理しない差出人
+
+[crm]
+csv_path = "data/customers.csv"
+
+# ---- 自動返信 -----------------------------------------------------------
+# 最初は false（全部下書き止まり）で始め、慣れてから定型カテゴリだけ true にする。
+[auto_reply]
+enabled = false
+categories = ["資料請求"]
+max_per_sender_per_day = 1
+
+# ---- 通知先（複数可） -----------------------------------------------------
+[[notify]]
+type = "console"
+
+# [[notify]]
+# type = "slack"
+# webhook_url = "env:SLACK_WEBHOOK_URL"
+
+# [[notify]]
+# type = "chatwork"
+# api_token = "env:CHATWORK_TOKEN"
+# room_id = "123456"
+
+# [[notify]]
+# type = "line"                       # LINE Messaging API
+# channel_access_token = "env:LINE_TOKEN"
+# to = "Uxxxxxxxx"
+
+# [[notify]]
+# type = "webhook"                    # Make / Zapier / n8n へ
+# url = "env:NOTIFY_WEBHOOK_URL"
