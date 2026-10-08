@@ -10,25 +10,30 @@ import tomllib
 from pathlib import Path
 
 from . import notify
-from .ai import Analyzer, BusinessProfile
+from .ai import BusinessProfile, make_analyzer
 from .crm import CsvCustomerLog
 from .pipeline import AutoReplyPolicy, DirectoryDraftSink, Pipeline, ProcessedStore
 from .sources import EmlDirectory, ImapMailbox, ImapSettings
 
 
-def _resolve(value):
+def _resolve(value, strict: bool = True):
     if isinstance(value, str) and value.startswith("env:"):
         name = value[4:]
         if name not in os.environ:
-            raise KeyError(f"環境変数 {name} が設定されていません")
+            if strict:
+                raise KeyError(f"環境変数 {name} が設定されていません")
+            return ""
         return os.environ[name]
     if isinstance(value, dict):
-        return {k: _resolve(v) for k, v in value.items()}
+        return {k: _resolve(v, strict) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_resolve(v, strict) for v in value]
     return value
 
 
-def load(path: str) -> dict:
-    return _resolve(tomllib.loads(Path(path).read_text(encoding="utf-8")))
+def load(path: str, strict: bool = True) -> dict:
+    """strict=False のときは未設定の環境変数を空文字にする（メール設定なしで try を動かすため）。"""
+    return _resolve(tomllib.loads(Path(path).read_text(encoding="utf-8")), strict)
 
 
 def build_mailbox(cfg: dict) -> ImapMailbox | None:
@@ -81,7 +86,8 @@ def build_pipeline(cfg: dict, analyzer=None) -> tuple[Pipeline, object, ImapMail
     if not from_address:
         raise ValueError("[reply] from_address を設定してください")
     pipeline = Pipeline(
-        analyzer=analyzer or Analyzer(profile, model=cfg.get("ai", {}).get("model", "claude-opus-5-5")),
+        analyzer=analyzer
+        or make_analyzer(cfg.get("ai", {}).get("provider", "openai"), profile, cfg.get("ai", {}).get("model", "")),
         customers=CsvCustomerLog(cfg.get("crm", {}).get("csv_path", str(data_dir / "customers.csv"))),
         drafts=mailbox or DirectoryDraftSink(str(data_dir / "drafts")),
         notifiers=build_notifiers(cfg),

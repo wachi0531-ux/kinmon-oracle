@@ -35,7 +35,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("-i", "--interval", type=int, default=60)
     args = parser.parse_args(argv)
 
-    cfg = config_mod.load(args.config)
+    cfg = config_mod.load(args.config, strict=args.command != "try")
     pipeline, source, _ = config_mod.build_pipeline(cfg)
 
     if args.command == "try":

@@ -151,10 +151,9 @@ def build_reply(
     msg = EmailMessage()
     msg["From"] = formataddr((from_name, from_address)) if from_name else from_address
     msg["To"] = formataddr((inquiry.from_name, inquiry.from_address)) if inquiry.from_name else inquiry.from_address
-    subject = analysis.reply_subject or inquiry.subject
-    if not subject.lower().startswith("re:"):
-        subject = "Re: " + (inquiry.subject or subject)
-    msg["Subject"] = subject
+    # 件名は元メールから作る（AIに任せるとスレッドが切れることがある）
+    subject = inquiry.subject or analysis.reply_subject
+    msg["Subject"] = subject if subject.lower().startswith("re:") else "Re: " + subject
     msg["Date"] = formatdate(localtime=True)
     msg["Message-ID"] = make_msgid(domain=from_address.split("@")[-1])
     # スレッドとしてつながるように

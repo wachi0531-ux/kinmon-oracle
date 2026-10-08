@@ -20,7 +20,10 @@ categories = ["見積依頼", "資料請求", "予約・日程調整", "質問",
 tone = "丁寧で簡潔なビジネス敬語"
 
 [ai]
-model = "claude-opus-5-5"   # ANTHROPIC_API_KEY 環境変数が必要
+provider = "openai"        # "openai"（ChatGPT） / "anthropic"（Claude）
+model = "gpt-5-mini"       # 空にすると各社の標準モデル
+# openai    → 環境変数 OPENAI_API_KEY が必要
+# anthropic → 環境変数 ANTHROPIC_API_KEY が必要（model 例: "claude-opus-5-5"）
 
 # ---- 受信方式（どれか1つ） --------------------------------------------
 [source]

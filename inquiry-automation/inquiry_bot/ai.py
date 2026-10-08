@@ -1,4 +1,7 @@
-"""AI による内容確認・顧客情報の抽出・返信文の作成（Claude API）。"""
+"""AI による内容確認・顧客情報の抽出・返信文の作成。
+
+ChatGPT（OpenAI API）と Claude（Anthropic API）のどちらでも動く。config の [ai] provider で切り替える。
+"""
 
 from __future__ import annotations
 
@@ -6,8 +9,6 @@ import json
 from dataclasses import dataclass, field
 
 from .models import Analysis, Customer, Inquiry
-
-MODEL = "claude-opus-5-5"
 
 SCHEMA = {
     "type": "object",
@@ -72,37 +73,78 @@ SYSTEM_TEMPLATE = """あなたは「{company}」の問い合わせ一次対応�
 """
 
 
-class Analyzer:
-    def __init__(self, profile: BusinessProfile, model: str = MODEL, client=None):
-        self.profile = profile
-        self.model = model
+def _user_content(inquiry: Inquiry) -> str:
+    return (
+        "<inquiry>\n"
+        f"差出人: {inquiry.from_name} <{inquiry.from_address}>\n"
+        f"件名: {inquiry.subject}\n"
+        f"受信日時: {inquiry.received_at.isoformat()}\n\n"
+        f"{inquiry.body[:50000]}\n"
+        "</inquiry>"
+    )
+
+
+def _system_prompt(profile: BusinessProfile) -> str:
+    return SYSTEM_TEMPLATE.format(
+        company=profile.company_name or "当社",
+        knowledge=profile.knowledge or "（未設定）",
+        categories=" / ".join(profile.categories),
+        tone=profile.tone,
+        signature=profile.signature or "（署名未設定）",
+    )
+
+
+class OpenAIAnalyzer:
+    """ChatGPT（OpenAI API）版。環境変数 OPENAI_API_KEY が必要。"""
+
+    DEFAULT_MODEL = "gpt-5-mini"
+
+    def __init__(self, profile: BusinessProfile, model: str = "", client=None):
+        self.model = model or self.DEFAULT_MODEL
+        if client is None:
+            import openai
+
+            client = openai.OpenAI()
+        self.client = client
+        self.system = _system_prompt(profile)
+
+    def analyze(self, inquiry: Inquiry) -> Analysis:
+        response = self.client.responses.create(
+            model=self.model,
+            instructions=self.system,
+            input=_user_content(inquiry),
+            # JSON の形を強制する（Structured Outputs）
+            text={"format": {"type": "json_schema", "name": "inquiry_analysis", "schema": SCHEMA, "strict": True}},
+        )
+        for item in response.output or []:
+            for part in getattr(item, "content", None) or []:
+                if getattr(part, "type", "") == "refusal":
+                    raise RuntimeError("AIが処理を辞退しました。手動で確認してください。")
+        if response.status == "incomplete":
+            raise RuntimeError(f"AIの出力が途中で切れました: {response.incomplete_details}")
+        return parse_analysis(json.loads(response.output_text), inquiry)
+
+
+class ClaudeAnalyzer:
+    """Claude（Anthropic API）版。環境変数 ANTHROPIC_API_KEY が必要。"""
+
+    DEFAULT_MODEL = "claude-opus-5-5"
+
+    def __init__(self, profile: BusinessProfile, model: str = "", client=None):
+        self.model = model or self.DEFAULT_MODEL
         if client is None:
             import anthropic
 
             client = anthropic.Anthropic()
         self.client = client
-        self.system = SYSTEM_TEMPLATE.format(
-            company=profile.company_name or "当社",
-            knowledge=profile.knowledge or "（未設定）",
-            categories=" / ".join(profile.categories),
-            tone=profile.tone,
-            signature=profile.signature or "（署名未設定）",
-        )
+        self.system = _system_prompt(profile)
 
     def analyze(self, inquiry: Inquiry) -> Analysis:
-        user = (
-            "<inquiry>\n"
-            f"差出人: {inquiry.from_name} <{inquiry.from_address}>\n"
-            f"件名: {inquiry.subject}\n"
-            f"受信日時: {inquiry.received_at.isoformat()}\n\n"
-            f"{inquiry.body[:50000]}\n"
-            "</inquiry>"
-        )
         response = self.client.beta.messages.create(
             model=self.model,
             max_tokens=16000,
             system=self.system,
-            messages=[{"role": "user", "content": user}],
+            messages=[{"role": "user", "content": _user_content(inquiry)}],
             output_config={"effort": "medium", "format": {"type": "json_schema", "schema": SCHEMA}},
             # 安全フィルタで断られた場合に別モデルで続行する（サーバー側フォールバック）
             betas=["server-side-fallback-2026-07-01"],
@@ -114,6 +156,17 @@ class Analyzer:
             raise RuntimeError("AIの出力が途中で切れました。")
         text = "".join(b.text for b in response.content if b.type == "text")
         return parse_analysis(json.loads(text), inquiry)
+
+
+PROVIDERS = {"openai": OpenAIAnalyzer, "anthropic": ClaudeAnalyzer}
+
+
+def make_analyzer(provider: str, profile: BusinessProfile, model: str = ""):
+    try:
+        cls = PROVIDERS[provider]
+    except KeyError:
+        raise ValueError(f"未対応の ai.provider: {provider}（{' / '.join(PROVIDERS)}）") from None
+    return cls(profile, model=model)
 
 
 def parse_analysis(data: dict, inquiry: Inquiry) -> Analysis:

@@ -3,7 +3,7 @@
 ```
 問い合わせ（Gmail / Outlook / 独自ドメインメール / 転送 …どれでも）
 ↓
-AIが内容を確認（カテゴリ・緊急度・要約）
+AIが内容を確認（カテゴリ・緊急度・要約）※ ChatGPT（OpenAI）/ Claude を選べる
 ↓
 顧客情報を登録（CSV → Excel / スプレッドシートで開ける）
 ↓
@@ -26,31 +26,68 @@ AIが内容を確認（カテゴリ・緊急度・要約）
 
 AIによる確認から通知までの流れ（`inquiry_bot/pipeline.py`）は、どの受信方式でも共通です。新しい受信方式を追加するときは、`inquiry_bot/sources/base.py` の `fetch_new()`（受信）、`save_draft()`（下書き保存）、`send()`（送信）を実装したクラスを1つ足します。Gmail API や Microsoft Graph を使いたい場合も、ここに追加します。
 
-## セットアップ
+## はじめて動かす手順（自分のPCで確認する）
 
+### 0. 準備するもの
+- Python 3.11 以上（Windows は https://www.python.org/ から。インストール時に「Add python.exe to PATH」にチェック）
+- OpenAI の APIキー（https://platform.openai.com/api-keys で発行。ChatGPT Plus とは別契約で、APIは従量課金。1通あたり数円程度以下）
+
+### 1. ダウンロードとインストール
 ```bash
-cd inquiry-automation
+git clone -b claude/email-inquiry-automation-threqb https://github.com/wachi0531-ux/kinmon-oracle.git
+cd kinmon-oracle/inquiry-automation
 pip install -r requirements.txt
-cp config.example.toml config.toml   # お客さんごとに編集する
-export ANTHROPIC_API_KEY=...
-export MAIL_PASSWORD=...             # config.toml に "env:MAIL_PASSWORD" と書いた値
+cp config.example.toml config.toml      # Windows は copy config.example.toml config.toml
 ```
 
-### 1通だけ試す（送信も保存もしない）
-
+### 2. APIキーを設定
 ```bash
-python -m inquiry_bot try -c config.toml samples/sample-inquiry.eml
+export OPENAI_API_KEY="sk-..."          # Mac
+set OPENAI_API_KEY=sk-...               # Windows（コマンドプロンプト）
 ```
 
-### 本番運用
+### 3. メールアカウント無しで AI の出来を確認する（送信も保存もしない）
+`samples/` に、資料請求・見積依頼・クレーム・営業メールの4通の例が入っています。
+```bash
+python -m inquiry_bot try -c config.toml samples/1-shiryo.eml
+python -m inquiry_bot try -c config.toml samples/3-claim.eml
+```
+カテゴリ・要約・顧客情報・返信案が画面に出ます。`config.toml` の `[business]`（会社名・署名・`knowledge`）を書き換えると返信文が変わります。
+
+### 4. 実際のメール（Gmail の例）で動かす
+1. Google アカウントで2段階認証を有効にして「アプリパスワード」を発行する
+2. `config.toml` の `[mailbox]` の `username` を自分のアドレスにする（`host` などは Gmail 用のまま）
+3. 実行する
+```bash
+export MAIL_PASSWORD="発行したアプリパスワード"
+python -m inquiry_bot run -c config.toml
+```
+4. Gmail の「下書き」に返信案が入り、`data/customers.csv` に顧客情報が追記されていることを確認する
+   （直近7日分の受信メールが対象です。元のメールは既読になりません）
+
+うまくいったら `poll`（定期実行）や通知先（Slack / Chatwork / LINE）を設定します。
+
+## コマンド一覧
 
 ```bash
-python -m inquiry_bot run  -c config.toml          # 新着を1回だけ処理する（cron 向け）
-python -m inquiry_bot poll -c config.toml -i 60    # 60秒ごとに処理し続ける
-python -m inquiry_bot serve -c config.toml         # 転送方式（Webhook を待ち受ける）
+python -m inquiry_bot try   -c config.toml mail.eml  # 1通だけ試す（送信・保存しない）
+python -m inquiry_bot run   -c config.toml           # 新着を1回だけ処理する（cron 向け）
+python -m inquiry_bot poll  -c config.toml -i 60     # 60秒ごとに処理し続ける
+python -m inquiry_bot serve -c config.toml           # 転送方式（Webhook を待ち受ける）
 ```
 
 転送方式では、Cloudflare Email Routing（Email Worker）、SendGrid Inbound Parse、Mailgun Routes などで受けた生メールを、`POST /inbound` に送ってもらいます。その際、ヘッダ `X-Inbound-Secret` を付ける必要があります。
+
+## AI の切り替え
+
+`config.toml` の `[ai]` で選びます。
+
+| provider | 必要な環境変数 | 標準モデル |
+|---|---|---|
+| `openai`（ChatGPT） | `OPENAI_API_KEY` | `gpt-5-mini`（`model` で変更可） |
+| `anthropic`（Claude） | `ANTHROPIC_API_KEY` | `claude-opus-5-5` |
+
+どちらも JSON の形を強制する機能（Structured Outputs）を使っているため、出力の崩れで止まることはありません。
 
 ## メール環境ごとの注意
 

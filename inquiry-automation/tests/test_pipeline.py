@@ -8,7 +8,7 @@ from email.message import EmailMessage
 from pathlib import Path
 from types import SimpleNamespace
 
-from inquiry_bot.ai import Analyzer, BusinessProfile, parse_analysis
+from inquiry_bot.ai import BusinessProfile, ClaudeAnalyzer, OpenAIAnalyzer, make_analyzer, parse_analysis
 from inquiry_bot.crm import CsvCustomerLog
 from inquiry_bot.models import Inquiry
 from inquiry_bot.pipeline import AutoReplyPolicy, DirectoryDraftSink, Pipeline, ProcessedStore
@@ -91,6 +91,13 @@ class PipelineTest(unittest.TestCase):
         draft = self.drafts.items[0].decode()
         self.assertIn("In-Reply-To: <abc123@example.co.jp>", draft)
         self.assertNotIn("Auto-Submitted", draft)
+
+    def test_reply_subject_follows_original_mail(self):
+        p = self.make(FakeAnalyzer({**AI_RESULT, "reply_subject": "全然違う件名"}))
+        p.handle(Inquiry.from_bytes(make_raw(subject="Re: 見積の件"), "t"))
+        from email import message_from_bytes, policy
+
+        self.assertEqual(message_from_bytes(self.drafts.items[0], policy=policy.default)["Subject"], "Re: 見積の件")
         rows = list(csv.DictReader((self.tmp / "customers.csv").open(encoding="utf-8-sig")))
         self.assertEqual(rows[0]["会社名"], "山田商事")
         self.assertIn("返信案", self.notifier.items[0])
@@ -194,7 +201,7 @@ class AnalyzerRequestTest(unittest.TestCase):
             )
 
         client = SimpleNamespace(beta=SimpleNamespace(messages=SimpleNamespace(create=create)))
-        a = Analyzer(BusinessProfile(company_name="ショップ", signature="ショップ 担当"), client=client)
+        a = ClaudeAnalyzer(BusinessProfile(company_name="ショップ", signature="ショップ 担当"), client=client)
         result = a.analyze(Inquiry.from_bytes(make_raw(), "t"))
         self.assertEqual(result.customer.company, "山田商事")
         self.assertEqual(captured["model"], "claude-opus-5-5")
@@ -206,7 +213,47 @@ class AnalyzerRequestTest(unittest.TestCase):
             beta=SimpleNamespace(messages=SimpleNamespace(create=lambda **k: SimpleNamespace(stop_reason="refusal", content=[])))
         )
         with self.assertRaises(RuntimeError):
-            Analyzer(BusinessProfile(), client=client).analyze(Inquiry.from_bytes(make_raw(), "t"))
+            ClaudeAnalyzer(BusinessProfile(), client=client).analyze(Inquiry.from_bytes(make_raw(), "t"))
+
+
+class OpenAIAnalyzerTest(unittest.TestCase):
+    def fake_client(self, response):
+        captured = {}
+
+        def create(**kwargs):
+            captured.update(kwargs)
+            return response
+
+        return SimpleNamespace(responses=SimpleNamespace(create=create)), captured
+
+    def test_request_shape_and_parse(self):
+        resp = SimpleNamespace(
+            status="completed",
+            output=[SimpleNamespace(type="message", content=[SimpleNamespace(type="output_text")])],
+            output_text=json.dumps(AI_RESULT, ensure_ascii=False),
+        )
+        client, captured = self.fake_client(resp)
+        a = OpenAIAnalyzer(BusinessProfile(company_name="ショップ"), client=client)
+        result = a.analyze(Inquiry.from_bytes(make_raw(), "t"))
+        self.assertEqual(result.category, "資料請求")
+        self.assertEqual(captured["model"], "gpt-5-mini")
+        fmt = captured["text"]["format"]
+        self.assertEqual((fmt["type"], fmt["strict"]), ("json_schema", True))
+        self.assertIn("資料を送ってください", captured["input"])
+
+    def test_refusal_raises(self):
+        resp = SimpleNamespace(
+            status="completed",
+            output=[SimpleNamespace(type="message", content=[SimpleNamespace(type="refusal", refusal="no")])],
+            output_text="",
+        )
+        client, _ = self.fake_client(resp)
+        with self.assertRaises(RuntimeError):
+            OpenAIAnalyzer(BusinessProfile(), client=client).analyze(Inquiry.from_bytes(make_raw(), "t"))
+
+    def test_unknown_provider(self):
+        with self.assertRaises(ValueError):
+            make_analyzer("gemini", BusinessProfile())
 
 
 class DraftDirTest(unittest.TestCase):
