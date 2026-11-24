@@ -1,0 +1,14 @@
+{
+  "name": "smile-threads-manager",
+  "version": "1.0.0",
+  "description": "スマイル共済向け Threads集客・相談管理システム(依存パッケージなし / Node 22.13+)",
+  "private": true,
+  "type": "commonjs",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "start": "node --disable-warning=ExperimentalWarning server.js",
+    "seed": "node --disable-warning=ExperimentalWarning scripts/seed.js",
+    "test": "node --disable-warning=ExperimentalWarning --test \"test/*.test.js\""
+  }
+}
