@@ -45,7 +45,7 @@ const DEFAULT_SETTINGS = {
   line_notify_owner: '0',
   auto_reply_enabled: '0',       // コメント自動返信(初期オフ)
   auto_reply_daily_cap: '20',
-  ai_provider: 'none',           // none | anthropic | openai
+  ai_provider: 'openai',         // openai(既定) | anthropic | none
   ai_model: '',
   ai_base_url: '',
   retention_days: '365',

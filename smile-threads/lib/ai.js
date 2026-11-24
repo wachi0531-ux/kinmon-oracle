@@ -15,7 +15,7 @@ function makeAi(db) {
   const status = () => {
     const p = provider();
     if (p === 'none') return { state: 'off', label: 'AI未接続(テンプレートで作成)' };
-    return db.hasSecret('ai_key') ? { state: 'live', label: `AI接続済み(${p})` } : { state: 'waiting', label: 'AIキー未設定' };
+    return db.hasSecret('ai_key') ? { state: 'live', label: `AI接続済み(${p === 'openai' ? 'OpenAI' : 'Claude'})` } : { state: 'waiting', label: 'APIキー未設定(設定画面に貼り付けるまでテンプレートで動きます)' };
   };
   async function generate({ theme, hint, productContext }) {
     const p = provider();
@@ -44,6 +44,12 @@ function makeAi(db) {
     if (!res.ok) throw new Error(`AIエラー(${res.status})`);
     return (json.choices?.[0]?.message?.content || '').trim();
   }
-  return { status, generate, GUARD };
+  // 接続テスト: 短い下書きを1回だけ作る(キーは返さない)
+  async function test() {
+    if (!db.hasSecret('ai_key')) return { ok: false, message: 'APIキーが未設定です' };
+    try { const t = await generate({ theme: '接続テスト', hint: '「接続テストです」と20文字以内で1文だけ書く', productContext: '' }); return { ok: !!t, message: t ? '接続できました' : '応答が空でした', preview: (t || '').slice(0, 80) }; }
+    catch (e) { return { ok: false, message: e.message }; }
+  }
+  return { status, generate, test, GUARD };
 }
 module.exports = { makeAi };

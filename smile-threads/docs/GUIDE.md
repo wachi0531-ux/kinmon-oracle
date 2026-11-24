@@ -32,7 +32,7 @@ Threadsで出会った人を、LINEまたは予約ページから個別相談に
 | **公開サーバー(https)** | LINEのWebhookは外から届く必要があります。Render / Railway / Fly.io / VPS など、Node常時起動できるもの。`data/` フォルダ(DB)を消えない場所に保存すること | 各サービスの料金ページ(無料枠は停止・消去される場合あり) |
 | Meta開発者アカウント+Threads API | アプリ作成、権限の取得、アクセストークンとユーザーID | developers.facebook.com の Threads ドキュメント |
 | LINE公式アカウント+Messaging API | チャネルシークレット/アクセストークン、Webhook URL設定、「応答メッセージ」をオフ | LINE Developers / 料金ページ |
-| (任意)AIのAPIキー | **ChatGPT等の有料プランとAPI料金は別**。すでにお持ちならそれを、なければ「使わない」でOK | 各社の公式料金ページ |
+| AIのAPIキー(OpenAI・お持ちの前提) | 設定 → 4.AI下書き の「APIキー」に貼り付け →「接続テスト」。**ChatGPTの有料プランとAPI料金は別**で、APIは従量課金です。使用量・上限の設定はOpenAIの管理画面で確認してください | OpenAIの公式料金ページ |
 | (任意)Googleカレンダー | サービスアカウント+カレンダー共有(未検証機能) | Google Cloud |
 | 正式な商品資料 | 正式名称・運営元・保障・掛金・加入条件・所属先の募集ルール | 所属先 |
 

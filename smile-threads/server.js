@@ -88,6 +88,7 @@ function createApp({ dbFile, appSecret, passwordHash, cookieSecure = false, serv
     for (const k of SECRET_KEYS) if (k in body) { const v = String(body[k] || '').trim(); if (v) db.setSecret(k, v); else db.deleteSecret(k); }
     send(res, 200, settingsView());
   });
+  R('POST', '/api/ai/test', async (req, res) => send(res, 200, await svc.ai.test()));
   R('POST', '/api/pause', async (req, res, { body }) => { db.setSetting('automation_paused', body.paused ? '1' : '0'); send(res, 200, { paused: !!body.paused }); });
 
   // 資料

@@ -183,3 +183,28 @@ test('DM支援: マスク・返信案(商品未登録は要確認)', async () =>
   const re = await t.call('PUT', `/api/dms/${dm.id}`, { regen: true }); assert.match(re.json.reply_draft, /登録した掛金の文面/);
   t.close();
 });
+
+test('AI(OpenAI): キー設定後はAIで下書き(要確認)/ 守るべきルールを送る / キーは漏らさない / 失敗時はテンプレート', async () => {
+  let fail = false;
+  const mock = await mockServer(({ url }) => {
+    if (!url.startsWith('/v1/chat/completions')) return { status: 404 };
+    return fail ? { status: 500, json: { error: 'x' } } : { json: { choices: [{ message: { content: 'AIが書いた下書きです。' } }] } };
+  });
+  const t = await start(); await t.login();
+  assert.equal((await t.call('GET', '/api/settings')).json.ai_provider, 'openai'); // 既定はOpenAI
+  assert.equal((await t.call('GET', '/api/dashboard')).json.statuses.ai.state, 'waiting');
+  assert.equal((await t.call('POST', '/api/posts/generate', { theme: '家族の安心' })).json.via, 'template'); // キー前はテンプレート
+  assert.equal((await t.call('POST', '/api/ai/test', {})).json.ok, false);
+  await t.call('PUT', '/api/settings', { ai_base_url: mock.url + '/v1' });
+  await t.call('PUT', '/api/secrets', { ai_key: 'sk-TESTKEY123' });
+  assert.equal((await t.call('POST', '/api/ai/test', {})).json.ok, true);
+  const g = (await t.call('POST', '/api/posts/generate', { theme: '家族の安心', hint: '春' })).json;
+  assert.equal(g.via, 'ai'); assert.equal(g.post.status, '要確認'); assert.match(g.post.check_notes, /事実関係を必ず確認/);
+  const c = mock.calls.at(-1); assert.equal(c.headers.authorization, 'Bearer sk-TESTKEY123');
+  const sent = JSON.parse(c.body); assert.match(sent.messages[0].content, /創作しない/); assert.match(sent.messages[1].content, /未登録/); // 商品未登録を明示して送る
+  assert.ok(!JSON.stringify((await t.call('GET', '/api/settings')).json).includes('sk-TEST'));
+  fail = true; // AI障害時はテンプレートに切り替え、通知を残す
+  const f = (await t.call('POST', '/api/posts/generate', { theme: '家族の安心' })).json;
+  assert.equal(f.via, 'template'); assert.ok(t.db.q("SELECT * FROM notifications WHERE kind='ai'").length >= 1);
+  mock.close(); t.close();
+});
